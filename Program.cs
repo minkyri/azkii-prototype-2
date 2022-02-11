@@ -1,2 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿GameF.Print("\nAZKII PROTOTYPE 2");
+
+while(true){
+
+    Parser.Parse(GameF.Input("Command me!"));
+
+}
+

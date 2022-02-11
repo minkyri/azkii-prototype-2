@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "azkii-prototype-2/1.0.0": {
+        "runtime": {
+          "azkii-prototype-2.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "azkii-prototype-2/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

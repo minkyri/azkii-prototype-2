@@ -1,0 +1,15 @@
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\azkii-prototype-2.exe
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\azkii-prototype-2.deps.json
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\azkii-prototype-2.runtimeconfig.json
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\azkii-prototype-2.dll
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\ref\azkii-prototype-2.dll
+E:\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\azkii-prototype-2.pdb
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.csproj.AssemblyReference.cache
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.GeneratedMSBuildEditorConfig.editorconfig
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.AssemblyInfoInputs.cache
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.AssemblyInfo.cs
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.csproj.CoreCompileInputs.cache
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.dll
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\ref\azkii-prototype-2.dll
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.pdb
+E:\cs-project\solutions\azkii-prototype-2\obj\Debug\net6.0\azkii-prototype-2.genruntimeconfig.cache
