@@ -4,20 +4,103 @@ public static class Parser{
 
         "the",
         "an",
-        "a"
+        "a",
+        "one",
+        "that"
+
+    };
+    private static string[] conjunctions = new string[]{
+
+        "and",
+        "then"
 
     };
 
     public static void Parse(string input){
 
-        input = input.ToLower();
-        List<string> splitInput = CleanInput(input);
+        string cleanInput = CleanInput(input.ToLower());
+        string[] commands = SplitActions(cleanInput);
 
-        //foreach(string s in splitInput)GameF.Print(s);
+        //GameF.Print(commands.Length.ToString());
+        for(int i = 0; i < commands.Length; i++){
+
+            string[] command = commands[i].Split(' ');
+            string verb = "";
+            string directObject = "";
+            string preposition = "";
+            string indirectObject = "";
+
+            for(int a = 0; a < command.Length; a++){
+
+                if(GameData.verbs.Contains(command[a])){
+
+                    if(verb == ""){
+
+                        verb = command[a];
+
+                    }
+                    else{
+
+                        GameF.Print("There are too many verbs in that sentence!");
+                        return;
+
+                    }
+
+                }
+                else if(GameData.prepositions.Contains(command[a])){
+
+                    if(preposition == ""){
+
+                        preposition = command[a];
+
+                    }
+                    else{
+
+                        GameF.Print("There are too many prepositions in that sentence!");
+                        return;
+
+                    }
+
+                }
+                else if(GameData.objects.Contains(command[a])){
+
+                    if(directObject == ""){
+
+                        directObject = command[a];
+
+                    }
+                    else if(indirectObject == ""){
+
+                        indirectObject = command[a];
+
+                    }
+                    else{
+
+                        GameF.Print("There are too many nouns in that sentence!");
+                        return;
+
+                    }
+
+                }
+
+            }
+
+            //Run verb subroutines
+            //Run object subroutines
+
+            // GameF.Print("ACTION: " + (i+1).ToString());
+            // GameF.Print("   verb: " + verb);
+            // GameF.Print("   direct object: " + directObject);
+            // GameF.Print("   preposition: " + preposition);
+            // GameF.Print("   indirect object: " + indirectObject);
+
+        }
+
+        //foreach(string s in commands)GameF.Print(s);
 
     }
 
-    private static List<string> CleanInput(string input){
+    private static string CleanInput(string input){
 
         List<string> splitInput = input.Split(' ').ToList();
         List<string> cleanSplitInput = new List<string>{};
@@ -37,8 +120,6 @@ public static class Parser{
 
                 )){
 
-                    //GameF.Print("Removed: " + splitInput[i][c] + " = " + splitInput[i].Remove(c, 1));
-                    // splitInput[i] = splitInput[i].Remove(c, 1);
                     temp += splitInput[i][c];
 
                 }
@@ -49,7 +130,51 @@ public static class Parser{
 
         }
 
-        return cleanSplitInput;
+        return ArrayToSentenceString(cleanSplitInput.ToArray());
+
+    }
+    private static string[] SplitActions(string input){
+
+        string[] splitInput = input.Split(' ');
+        List<List<string>> commands = new List<List<string>>{};
+
+        int commandIndex = 0;
+        commands.Add(new List<string>{});
+        for(int i = 0; i < splitInput.Length; i++){
+
+            if(conjunctions.Contains(splitInput[i])){
+                
+                commandIndex ++;
+                commands.Add(new List<string>{});
+
+            }
+            else commands[commandIndex].Add(splitInput[i]);
+            
+        }
+
+        List<List<string>> tempList = new List<List<string>>{};
+        foreach(List<string> l in commands)if(l.Count != 0)tempList.Add(l);
+        commands = tempList;
+
+        string[] returnArray = new string[commands.Count];
+        for(int i = 0; i < returnArray.Length; i++){
+
+            returnArray[i] = ArrayToSentenceString(commands[i].ToArray());
+
+        }
+
+        return returnArray;
+
+    }
+    private static string ArrayToSentenceString(string[] array){
+
+        string returnString = "";
+
+        if(array.Length == 0)return returnString;
+
+        for(int i = 0; i < array.Length-1; i++)returnString += array[i] + " ";
+        returnString += array[array.Length-1];
+        return returnString;
 
     }
 
