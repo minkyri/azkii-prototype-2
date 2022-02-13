@@ -1,21 +1,5 @@
 public static class Parser{
 
-    private static string[] fillerWords = new string[]{
-
-        "the",
-        "an",
-        "a",
-        "one",
-        "that"
-
-    };
-    private static string[] conjunctions = new string[]{
-
-        "and",
-        "then"
-
-    };
-
     public static void Parse(string input){
 
         string cleanInput = CleanInput(input.ToLower());
@@ -30,63 +14,7 @@ public static class Parser{
             string preposition = "";
             string indirectObject = "";
 
-            for(int a = 0; a < command.Length; a++){
-
-                if(GameData.verbs.Contains(command[a])){
-
-                    if(verb == ""){
-
-                        verb = command[a];
-
-                    }
-                    else{
-
-                        GameF.Print("There are too many verbs in that sentence!");
-                        return;
-
-                    }
-
-                }
-                else if(GameData.prepositions.Contains(command[a])){
-
-                    if(preposition == ""){
-
-                        preposition = command[a];
-
-                    }
-                    else{
-
-                        GameF.Print("There are too many prepositions in that sentence!");
-                        return;
-
-                    }
-
-                }
-                else if(GameData.objects.Contains(command[a])){
-
-                    if(directObject == ""){
-
-                        directObject = command[a];
-
-                    }
-                    else if(indirectObject == ""){
-
-                        indirectObject = command[a];
-
-                    }
-                    else{
-
-                        GameF.Print("There are too many nouns in that sentence!");
-                        return;
-
-                    }
-
-                }
-
-            }
-
-            //Run verb subroutines
-            //Run object subroutines
+            
 
             // GameF.Print("ACTION: " + (i+1).ToString());
             // GameF.Print("   verb: " + verb);
@@ -96,7 +24,7 @@ public static class Parser{
 
         }
 
-        //foreach(string s in commands)GameF.Print(s);
+        foreach(string s in commands)GameF.Print(s);
 
     }
 
@@ -126,7 +54,7 @@ public static class Parser{
 
             }
 
-            if(temp != "" && !fillerWords.Contains(temp))cleanSplitInput.Add(temp);
+            if(temp != "" && !Game.GetInstance().data.articles.Contains(temp))cleanSplitInput.Add(temp);
 
         }
 
@@ -142,7 +70,7 @@ public static class Parser{
         commands.Add(new List<string>{});
         for(int i = 0; i < splitInput.Length; i++){
 
-            if(conjunctions.Contains(splitInput[i])){
+            if(Game.GetInstance().data.conjunctions.Contains(splitInput[i])){
                 
                 commandIndex ++;
                 commands.Add(new List<string>{});
