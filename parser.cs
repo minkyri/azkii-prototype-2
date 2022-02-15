@@ -90,24 +90,33 @@ public static class Parser{
                 else{
 
                     GameF.Print("I don't know the word \"" + command[a] + "\"");
+                    return;
 
                 }
 
             }
 
-            directObjectID = ScoreObjects(objectPhrases[0]);
-            if(directObjectID == -1){
+            if(objectPhrases[0] != ""){
 
-                GameF.Print("There is no such object called " + objectPhrases[0]);
-                return;
+                directObjectID = ScoreObjects(CleanInput(objectPhrases[0]));
+                if(directObjectID == -1){
+
+                    GameF.Print("There is no such object called " + objectPhrases[0]);
+                    return;
+
+                }
 
             }
 
-            indirectObjectID = ScoreObjects(objectPhrases[1]);
-            if(indirectObjectID == -1){
+            if(objectPhrases[1] != ""){
 
-                GameF.Print("There is no such object called " + objectPhrases[1]);
-                return;
+                indirectObjectID = ScoreObjects(CleanInput(objectPhrases[1]));
+                if(indirectObjectID == -1){
+
+                    GameF.Print("There is no such object called " + objectPhrases[1]);
+                    return;
+
+                }
 
             }
 
@@ -117,6 +126,8 @@ public static class Parser{
             if(directObjectID != -1)GameF.Print("   direct object: " + Game.GetInstance().data.objects[directObjectID].name);
             if(preposition2ID != -1)GameF.Print("   preposition 2: " + Game.GetInstance().data.prepositions[preposition2ID].word);
             if(indirectObjectID != -1)GameF.Print("   indirect object: " + Game.GetInstance().data.objects[indirectObjectID].name);
+
+            //Game.GetInstance().data.verbs[verbID]
 
         }
 
@@ -151,6 +162,8 @@ public static class Parser{
             if(temp != "" && !Game.GetInstance().data.articles.Contains(temp))cleanSplitInput.Add(temp);
 
         }
+
+        //foreach(string s in cleanSplitInput)GameF.Print(s + "   len: " + s.Length.ToString());
 
         return ArrayToSentenceString(cleanSplitInput.ToArray());
 
@@ -234,19 +247,24 @@ public static class Parser{
     }
     public static int ScoreObjects(string objectPhrase){
 
-        string[] splitPhrase = CleanInput(objectPhrase).Split(" ");
+        string[] splitPhrase = objectPhrase.Split(" ");
         int singleObjectID = -1;
         List<int> objects = new List<int>{};
         List<int> objectScores = new List<int>{};
 
         for(int b = 0; b < splitPhrase.Length; b++){
 
+            //GameF.Print(splitPhrase[b] + "  len: " + splitPhrase[b].Length);
             int[] objectIndexes = WordToObjectIndexes(splitPhrase[b]);
+            
+            if(objectIndexes.Length == 1 && splitPhrase.Length > 1){
 
-            if(objectIndexes.Length == 1 && singleObjectID == -1)singleObjectID = objectIndexes[0];
-            else if(objectIndexes.Length == 1 && singleObjectID != -1 && objectIndexes[0] != singleObjectID){
+                if(singleObjectID == -1)singleObjectID = objectIndexes[0];
+                else if(singleObjectID != -1 && objectIndexes[0] != singleObjectID){
 
-                return -1;
+                    return -1;
+
+                }
 
             }
 
