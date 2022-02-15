@@ -2,6 +2,6 @@
 
 while(!Game.GetInstance().isFinished){
 
-    Parser.Parse(GameF.Input("Command me!"));
+    Parser.Parse(GameF.Input());
     
 }

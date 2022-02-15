@@ -9,11 +9,11 @@ public class GameData{
 
     public string[] articles;
     public string[] conjunctions;
-    public Dictionary<string, int> prepositions;
-    public Dictionary<string, int> verbs;
+    public WordSynonymPair[] prepositions;
+    public WordSynonymPair[] verbs;
     public string[] knownWords;
     public Object[] objects;
-    public int[,] wordObjectDictionary;
+    public int[,] objectWordTable;
     public Syntax[] syntaxes;
 
     public GameData(){
@@ -31,29 +31,30 @@ public class GameData{
             "then"
 
         };
-        prepositions = new Dictionary<string, int>{
+        prepositions = new WordSynonymPair[]{
 
-            {"under", 0},
-            {"below", 0},
-            {"underneath", 0},
-            {"in", 3},
-            {"through", 3},
-            {"using", 5},
-            {"with", 5},
-            {"at", 7}
+            new WordSynonymPair("under", 0),
+            new WordSynonymPair("below", 0),
+            new WordSynonymPair("underneath", 0),
+            new WordSynonymPair("in", 3),
+            new WordSynonymPair("through", 3),
+            new WordSynonymPair("using", 5),
+            new WordSynonymPair("with", 5),
+            new WordSynonymPair("at", 7)
 
         };
-        verbs = new Dictionary<string, int>{
+        verbs = new WordSynonymPair[]{
 
-            {"look", 0},
-            {"examine", 0},
-            {"throw", 2},
-            {"stare", 0},
-            {"launch", 2},
-            {"destroy", 5},
-            {"demolish", 5},
-            {"kill", 7},
-            {"fight", 7}
+            new WordSynonymPair("look", 0),
+            new WordSynonymPair("examine", 0),
+            new WordSynonymPair("throw", 2),
+            new WordSynonymPair("stare", 0),
+            new WordSynonymPair("launch", 2),
+            new WordSynonymPair("destroy", 5),
+            new WordSynonymPair("demolish", 5),
+            new WordSynonymPair("kill", 7),
+            new WordSynonymPair("fight", 7),
+            new WordSynonymPair("kill", 7),
 
         };
         knownWords = new string[]{
@@ -61,7 +62,8 @@ public class GameData{
             "old",
             "rusty",
             "iron",
-            "sword"
+            "sword",
+            "box"
 
         };
         objects = new Object[]{
@@ -132,20 +134,32 @@ public class GameData{
             new Object(
 
                 "sword",
-                "silver sword",
+                "rusty sword",
                 3,
                 TypeFlags.Weapon,
+                GameF.isolated
+
+            ),
+            new Object(
+
+                "box",
+                "iron box",
+                3,
+                TypeFlags.None,
                 GameF.isolated
 
             )
 
         };
-        wordObjectDictionary = new int[,]{
+        objectWordTable = new int[,]{
 
             {4, 0},
-            {4, 1},
             {4, 2},
-            {4, 3}
+            {4, 3},
+            {5, 0},
+            {5, 1},
+            {5, 2},
+            {5, 4}
 
         };
         syntaxes = new Syntax[]{
@@ -177,6 +191,11 @@ public class GameData{
             GameF.Print("You are looking at object " + objectID.ToString());
 
         }
+
+    #endregion
+    #region Object Subroutines
+
+
 
     #endregion
 

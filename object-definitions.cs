@@ -40,6 +40,19 @@ public class Object{
     }
 
 }
+public class WordSynonymPair{
+
+    public string word;
+    public int synonym;
+
+    public WordSynonymPair(string _word, int _synonym){
+
+        word = _word;
+        synonym = _synonym;
+
+    }
+
+}
 public class Syntax{
 
     int verbID;
