@@ -28,14 +28,15 @@ public class Object{
     public int holderID;
     public int[] travelTable;
     public TypeFlags flags;
-
-    public Object(string _name, string _description, int _holderID, TypeFlags _flags, int[] _travelTable){
+    public Action subroutine;
+    public Object(string _name, string _description, int _holderID, TypeFlags _flags, int[] _travelTable, Action _subroutine){
 
         name = _name;
         description = _description;
         holderID = _holderID;
         flags = _flags;
         travelTable = _travelTable;
+        subroutine = _subroutine;
 
     }
 
@@ -55,12 +56,12 @@ public class WordSynonymPair{
 }
 public class Syntax{
 
-    int verbID;
-    int preposition1ID;
-    TypeFlags directObjectFlags;
-    int preposition2ID;
-    TypeFlags indirectObjectFlags;
-    Action<int>[] subroutines;
+    public int verbID;
+    public int preposition1ID;
+    public TypeFlags directObjectFlags;
+    public int preposition2ID;
+    public TypeFlags indirectObjectFlags;
+    public Action[] subroutines;
 
     public Syntax(
 
@@ -69,7 +70,7 @@ public class Syntax{
         TypeFlags _directObjectFlags, 
         int _preposition2ID, 
         TypeFlags _indirectObjectFlags, 
-        Action<int>[] _subroutines
+        Action[] _subroutines
 
     )
     {

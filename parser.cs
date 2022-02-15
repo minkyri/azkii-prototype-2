@@ -1,5 +1,11 @@
 public static class Parser{
 
+    public static int verbID;
+    public static int preposition1ID = -1;
+    public static int directObjectID = -1;
+    public static int preposition2ID = -1;
+    public static int indirectObjectID = -1;
+
     public static void Parse(string input){
 
         string cleanInput = CleanInput(input.ToLower());
@@ -8,11 +14,11 @@ public static class Parser{
         for(int i = 0; i < commands.Length; i++){
 
             string[] command = commands[i].Split(' ');
-            int verbID;
-            int preposition1ID = -1;
-            int directObjectID = -1;
-            int preposition2ID = -1;
-            int indirectObjectID = -1;
+            verbID = -1;
+            preposition1ID = -1;
+            directObjectID = -1;
+            preposition2ID = -1;
+            indirectObjectID = -1;
 
             verbID = GetWSPairIndex(command[0], Game.GetInstance().data.verbs);
 
@@ -30,7 +36,7 @@ public static class Parser{
                 }
                 else{
 
-                    GameF.Print("I don't know the word \"" + command[0] + "\"");
+                    GameF.Print("I don't know the word \"" + command[0] + "\".");
 
                 }
                 return;
@@ -89,7 +95,7 @@ public static class Parser{
                 }
                 else{
 
-                    GameF.Print("I don't know the word \"" + command[a] + "\"");
+                    GameF.Print("I don't know the word \"" + command[a] + "\".");
                     return;
 
                 }
@@ -101,7 +107,7 @@ public static class Parser{
                 directObjectID = ScoreObjects(CleanInput(objectPhrases[0]));
                 if(directObjectID == -1){
 
-                    GameF.Print("There is no such object called " + objectPhrases[0]);
+                    GameF.Print("There is no such object called " + objectPhrases[0] + ".");
                     return;
 
                 }
@@ -113,21 +119,69 @@ public static class Parser{
                 indirectObjectID = ScoreObjects(CleanInput(objectPhrases[1]));
                 if(indirectObjectID == -1){
 
-                    GameF.Print("There is no such object called " + objectPhrases[1]);
+                    GameF.Print("There is no such object called " + objectPhrases[1] + ".");
                     return;
 
                 }
 
             }
 
-            GameF.Print("ACTION: " + (i+1).ToString());
-            if(verbID != -1)GameF.Print("   verb: " + Game.GetInstance().data.verbs[verbID].word);
-            if(preposition1ID != -1)GameF.Print("   preposition 1: " + Game.GetInstance().data.prepositions[preposition1ID].word);
-            if(directObjectID != -1)GameF.Print("   direct object: " + Game.GetInstance().data.objects[directObjectID].name);
-            if(preposition2ID != -1)GameF.Print("   preposition 2: " + Game.GetInstance().data.prepositions[preposition2ID].word);
-            if(indirectObjectID != -1)GameF.Print("   indirect object: " + Game.GetInstance().data.objects[indirectObjectID].name);
+            // GameF.Print("ACTION: " + (i+1).ToString());
+            // if(verbID != -1)GameF.Print("   verb: " + Game.GetInstance().data.verbs[verbID].word);
+            // if(preposition1ID != -1)GameF.Print("   preposition 1: " + Game.GetInstance().data.prepositions[preposition1ID].word);
+            // if(directObjectID != -1)GameF.Print("   direct object: " + Game.GetInstance().data.objects[directObjectID].name);
+            // if(preposition2ID != -1)GameF.Print("   preposition 2: " + Game.GetInstance().data.prepositions[preposition2ID].word);
+            // if(indirectObjectID != -1)GameF.Print("   indirect object: " + Game.GetInstance().data.objects[indirectObjectID].name);
 
-            //Game.GetInstance().data.verbs[verbID]
+            Syntax[] syntaxes = Game.GetInstance().data.syntaxes;
+            Object[] objects = Game.GetInstance().data.objects;
+
+            TypeFlags directObjectFlags = TypeFlags.None;
+            TypeFlags indirectObjectFlags = TypeFlags.None;
+
+            bool foundSyntax = false;
+
+            if(directObjectID != -1){
+                
+                directObjectFlags = objects[directObjectID].flags;
+                if(objects[directObjectID].subroutine != null)objects[directObjectID].subroutine();
+
+            }
+            if(indirectObjectID != -1){
+                
+                indirectObjectFlags = objects[indirectObjectID].flags;
+                if(objects[indirectObjectID].subroutine != null)objects[indirectObjectID].subroutine();
+
+            }
+
+            for(int s = 0; s < syntaxes.Length; s++){
+
+                if(
+
+                    syntaxes[s].verbID == verbID &&
+                    syntaxes[s].preposition1ID == preposition1ID &&
+                    directObjectFlags.HasFlag(syntaxes[s].directObjectFlags) &&
+                    syntaxes[s].preposition2ID == preposition2ID &&
+                    indirectObjectFlags.HasFlag(syntaxes[s].indirectObjectFlags)
+
+                ){
+
+                    foundSyntax = true;
+                    foreach(Action action in syntaxes[s].subroutines){
+
+                        action();
+
+                    }
+
+                }
+
+            }
+
+            if(!foundSyntax){
+
+                GameF.Print("That sentence isn't one that I recognise.");
+
+            }
 
         }
 

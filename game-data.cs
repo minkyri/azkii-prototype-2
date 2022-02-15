@@ -74,7 +74,8 @@ public class GameData{
                 "",
                 0,
                 TypeFlags.None,
-                GameF.isolated
+                GameF.isolated,
+                null
 
             ),
             new Object(
@@ -83,7 +84,8 @@ public class GameData{
                 "",
                 0,
                 TypeFlags.None,
-                GameF.isolated
+                GameF.isolated,
+                null
 
             ),
             new Object(
@@ -105,7 +107,8 @@ public class GameData{
                     -1,
                     -1
 
-                }
+                },
+                null
 
             ),
             new Object(
@@ -128,7 +131,8 @@ public class GameData{
                     -1
 
 
-                }
+                },
+                null
 
             ),
             new Object(
@@ -137,7 +141,8 @@ public class GameData{
                 "rusty sword",
                 3,
                 TypeFlags.Weapon,
-                GameF.isolated
+                GameF.isolated,
+                null
 
             ),
             new Object(
@@ -146,7 +151,8 @@ public class GameData{
                 "iron box",
                 3,
                 TypeFlags.None,
-                GameF.isolated
+                GameF.isolated,
+                null
 
             )
 
@@ -171,7 +177,7 @@ public class GameData{
                 TypeFlags.None,
                 -1,
                 TypeFlags.None,
-                new Action<int>[]{
+                new Action[]{
 
                     Look
 
@@ -185,10 +191,9 @@ public class GameData{
 
     #region Verb Subroutines
 
-        public void Look(int objectID){
+        public void Look(){
 
-            //Call object's subroutine and give it the verb, maybe have verb as global variable?
-            GameF.Print("You are looking at object " + objectID.ToString());
+            GameF.Print("You are looking around");
 
         }
 
