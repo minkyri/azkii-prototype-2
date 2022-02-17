@@ -3,11 +3,13 @@ public class Game{
     private static Game instance;
     public bool isFinished = false;
     public GameData data;
+
     private Game(){
 
         
 
     }
+    
     public static Game GetInstance()
     {
         if (instance == null)

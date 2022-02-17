@@ -186,7 +186,6 @@ public static class Parser{
         }
 
     }
-
     private static string CleanInput(string input){
 
         List<string> splitInput = input.Split(' ').ToList();
