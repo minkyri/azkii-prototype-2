@@ -102,12 +102,24 @@ public static class Parser{
 
             }
 
+            for(int a = 0; a < objectPhrases.Length; a++){
+
+                objectPhrases[a] =  CleanInput(objectPhrases[a]);
+
+            }
+
             if(objectPhrases[0] != ""){
 
-                directObjectID = ScoreObjects(CleanInput(objectPhrases[0]));
+                directObjectID = ScoreObjects(objectPhrases[0]);
                 if(directObjectID == -1){
 
                     GameF.Print("There is no such object called " + objectPhrases[0] + ".");
+                    return;
+
+                }
+                else if(directObjectID == -2){
+
+                    GameF.Print("You need to be more specific than that.");
                     return;
 
                 }
@@ -116,10 +128,16 @@ public static class Parser{
 
             if(objectPhrases[1] != ""){
 
-                indirectObjectID = ScoreObjects(CleanInput(objectPhrases[1]));
+                indirectObjectID = ScoreObjects(objectPhrases[1]);
                 if(indirectObjectID == -1){
 
                     GameF.Print("There is no such object called " + objectPhrases[1] + ".");
+                    return;
+
+                }
+                else if(indirectObjectID == -2){
+
+                    GameF.Print("You need to be more specific than that.");
                     return;
 
                 }
@@ -180,6 +198,13 @@ public static class Parser{
             if(!foundSyntax){
 
                 GameF.Print("That sentence isn't one that I recognise.");
+                return;
+
+            }
+
+            if(Game.GetInstance().data.objects[directObjectID].subroutine == null){
+
+                GameF.Print("routine for " + Game.GetInstance().data.objects[directObjectID].name + " is null!");
 
             }
 
@@ -287,13 +312,23 @@ public static class Parser{
 
         for(int i = 0; i < objectWordTable.Length/objectWordTable.Rank; i++){
 
-            if(GameF.GetIndex(word, Game.GetInstance().data.knownWords) == objectWordTable[i,1]){
+            foreach(int index in GameF.GetIndexes(word, Game.GetInstance().data.knownWords)){
 
-                objectIndexes.Add(objectWordTable[i,0]);
+                if(index == objectWordTable[i,1]){
+
+                    objectIndexes.Add(objectWordTable[i,0]);
+
+                }
 
             }
 
         }
+
+        // for(int i = 0; i < objectIndexes.Count; i++){
+
+        //     GameF.Print(Game.GetInstance().data.objects[objectIndexes[i]].description);
+
+        // }
 
         return objectIndexes.ToArray();
 
@@ -350,6 +385,16 @@ public static class Parser{
         int highscoreObject = -1;
 
         for(int i = 0; i < objectScores.Count; i++){
+
+            for(int j = 0; j < objectScores.Count; j++){
+
+                if(objectScores[i] == objectScores[j] && i != j){
+
+                    return -2;
+
+                }
+
+            }
 
             if(objectScores[i] > highestScore){
 

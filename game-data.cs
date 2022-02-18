@@ -173,21 +173,34 @@ public class GameData{
                 objectAdjectives = lines[i][4].Split(',');
                 objectSynonyms = lines[i][5].Split(',');
                 
-                knownWordsList.Add(name);
-                objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
-                knownWordsIndexCounter++;
-                foreach(string adjective in objectAdjectives){
+                if(name != ""){
 
-                    if(!knownWordsList.Contains(adjective))knownWordsList.Add(adjective);
+                    knownWordsList.Add(name);
                     objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
                     knownWordsIndexCounter++;
 
                 }
+                
+                foreach(string adjective in objectAdjectives){
+
+                    if(!knownWordsList.Contains(adjective) && adjective != ""){
+                        
+                        knownWordsList.Add(adjective);
+                        objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
+                        knownWordsIndexCounter++;
+
+                    }   
+
+                }
                 foreach(string synonym in objectSynonyms){
 
-                    if(!knownWordsList.Contains(synonym))knownWordsList.Add(synonym);
-                    objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
-                    knownWordsIndexCounter++;
+                    if(!knownWordsList.Contains(synonym) && synonym != ""){
+                        
+                        knownWordsList.Add(synonym);
+                        objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
+                        knownWordsIndexCounter++;
+
+                    }
 
                 }
 
@@ -211,6 +224,8 @@ public class GameData{
                     Type thisType = this.GetType();
                     MethodInfo theMethod = thisType.GetMethod(lines[i][17]);
                     subroutine = (Action)Delegate.CreateDelegate(typeof(Action), this, theMethod);
+                    //subroutine();
+                    //GameF.Print(lines[i][17]);
 
                 }
                 else{
@@ -342,7 +357,6 @@ public class GameData{
             //GameF.Print(syntaxes.Length.ToString());
 
         #endregion
-
         if(articles.Length == 0){
 
             GameF.Print("Game data does not specify any articles!");
@@ -564,7 +578,25 @@ public class GameData{
 
         public void Look(){
 
-            GameF.Print("You are looking around");
+            //
+
+        }
+        public void BlueKeyF(){
+
+            if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
+
+                GameF.Print("You are looking at the blue key.");
+
+            }
+
+        }
+        public void RedKeyF(){
+
+            if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
+
+                GameF.Print("You are looking at the red key.");
+
+            }
 
         }
 

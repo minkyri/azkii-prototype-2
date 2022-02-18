@@ -3,5 +3,7 @@
 
 NOTES & IMPROVEMENTS:
 
-    game-data.cs: left csv reader to add "" to each line, need to impliment the logic to prevent any empty strings from being
-    added in the data tables.
+    Ask user to elaborate if parser unsure of input. For example, if they type "fight", the program should ask the user,
+    "fight what?"
+
+    Different items have different values

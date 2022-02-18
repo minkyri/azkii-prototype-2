@@ -23,15 +23,18 @@ public static class GameF{
         return Console.ReadLine();
 
     }
-    public static int GetIndex(string s, string[] arr){
+    public static int[] GetIndexes(string s, string[] arr){
+
+        List<int> indexes = new List<int>{};
 
         for(int i = 0; i < arr.Length; i++){
 
-            if(arr[i] == s)return i;
+            if(arr[i] == s)indexes.Add(i);
 
         }
         
-        return -1;
+        if(indexes.Count > 0)return indexes.ToArray();
+        return new int[]{-1};
 
     }
     public static bool IsFileLocked(FileInfo file)
@@ -106,14 +109,14 @@ public static class GameF{
     public static void DisplayGameData(){
 
         Game.GetInstance();
-        Print("ARTICLES:");
+        Print("ARTICLES");
         foreach (string article in Game.GetInstance().data.articles)
         {
             
             Print("    " + article);
 
         }
-        Print("CONJUNCTIONS:");
+        Print("CONJUNCTIONS");
         foreach (string conjunction in Game.GetInstance().data.conjunctions)
         {
             
@@ -157,6 +160,22 @@ public static class GameF{
             if(syntaxes[i].preposition2ID != -1)display += "   PREP2:    " + Game.GetInstance().data.prepositions[syntaxes[i].preposition2ID].word;
             
             Print(display);
+
+        }
+
+        GameF.Print("KNOWN WORDS");
+        string[] knownWords = Game.GetInstance().data.knownWords;
+        foreach(string knownWord in knownWords){
+
+            GameF.Print("   " + knownWord);
+
+        }
+
+        GameF.Print("OBJECT WORD TABLE");
+        int[,] objectWordTable = Game.GetInstance().data.objectWordTable;
+        for(int i = 0; i < objectWordTable.Length/objectWordTable.Rank; i++){
+
+            GameF.Print("   " + objects[objectWordTable[i,0]].name + " : " + knownWords[objectWordTable[i,1]]);
 
         }
 
