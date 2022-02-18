@@ -202,12 +202,6 @@ public static class Parser{
 
             }
 
-            if(Game.GetInstance().data.objects[directObjectID].subroutine == null){
-
-                GameF.Print("routine for " + Game.GetInstance().data.objects[directObjectID].name + " is null!");
-
-            }
-
         }
 
     }

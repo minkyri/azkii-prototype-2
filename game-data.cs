@@ -7,7 +7,8 @@ public enum TypeFlags{
     None = 0,
     Weapon = 1 << 0,
     Container = 1 << 1,
-    Tangible = 1 << 2
+    Tangible = 1 << 2,
+    Actor = 1 << 3
 
 }
 public class GameData{
@@ -215,7 +216,22 @@ public class GameData{
                 string[] enumStrings = lines[i][16].Split(',');
                 foreach(string enumString in enumStrings){
 
-                    if(enumString != "")flags |= (TypeFlags)Enum.Parse(typeof(TypeFlags), enumString, true);
+                    if(enumString != ""){
+                        
+                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+
+                            flags |= (TypeFlags)result;
+
+                        }
+                        else{
+
+                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
+                            LoadGame();
+                            return;
+
+                        }
+
+                    }
 
                 }
                 
@@ -223,6 +239,13 @@ public class GameData{
 
                     Type thisType = this.GetType();
                     MethodInfo theMethod = thisType.GetMethod(lines[i][17]);
+                    if(theMethod == null){
+
+                        GameF.Print("The subroutine " + lines[i][17] + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
+                        LoadGame();
+                        return;
+
+                    }
                     subroutine = (Action)Delegate.CreateDelegate(typeof(Action), this, theMethod);
                     //subroutine();
                     //GameF.Print(lines[i][17]);
@@ -279,7 +302,22 @@ public class GameData{
                 string[] enumStrings = lines[i][2].Split(',');
                 foreach(string enumString in enumStrings){
 
-                    if(enumString != "")directObjectFlags |= (TypeFlags)System.Enum.Parse(typeof(TypeFlags), enumString, true);
+                    if(enumString != ""){
+                        
+                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+
+                            directObjectFlags |= (TypeFlags)result;
+
+                        }
+                        else{
+
+                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            LoadGame();
+                            return;
+
+                        }
+
+                    }
 
                 }
 
@@ -288,7 +326,22 @@ public class GameData{
                 enumStrings = lines[i][4].Split(',');
                 foreach(string enumString in enumStrings){
 
-                    if(enumString != "")indirectObjectFlags |= (TypeFlags)System.Enum.Parse(typeof(TypeFlags), enumString, true);
+                    if(enumString != ""){
+                        
+                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+
+                            indirectObjectFlags |= (TypeFlags)result;
+
+                        }
+                        else{
+
+                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            LoadGame();
+                            return;
+
+                        }
+
+                    }
 
                 }
 
@@ -300,6 +353,13 @@ public class GameData{
 
                         Type thisType = this.GetType();
                         MethodInfo theMethod = thisType.GetMethod(actionString);
+                        if(theMethod == null){
+
+                            GameF.Print("The subroutine " + actionString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            LoadGame();
+                            return;
+
+                        }
                         actionList.Add((Action)Delegate.CreateDelegate(typeof(Action), this, theMethod));
 
                     }
@@ -578,9 +638,19 @@ public class GameData{
 
         public void Look(){
 
-            //
+            GameF.Print("yello");
 
         }
+        public void Fight(){
+
+            GameF.Print("You are fighting the " + Game.GetInstance().data.objects[Parser.directObjectID].description + " " +
+                Game.GetInstance().data.prepositions[Parser.preposition2ID].word +  " your " + Game.GetInstance().data.objects[Parser.indirectObjectID].description + ".");
+
+        }
+
+    #endregion
+    #region Object Subroutines
+
         public void BlueKeyF(){
 
             if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
@@ -599,11 +669,6 @@ public class GameData{
             }
 
         }
-
-    #endregion
-    #region Object Subroutines
-
-
 
     #endregion
 

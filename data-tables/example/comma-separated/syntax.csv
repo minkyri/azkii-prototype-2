@@ -1,3 +1,4 @@
 VERB,PREPOSITION,DIRECT OBJECT FLAGS,PREPOSITION,INDIRECT OBJECT FLAGS,SUBROUTINES
 look,,,,,Look
 look,at,,,,Look
+fight,,Actor,with,Weapon,Fight
