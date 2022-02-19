@@ -5,10 +5,11 @@ using System.Reflection;
 public enum TypeFlags{
 
     None = 0,
-    Weapon = 1 << 0,
-    Container = 1 << 1,
-    Tangible = 1 << 2,
-    Actor = 1 << 3
+    Player = 1 << 0,
+    Direction = 1 << 1,
+    Container = 1 << 2,
+    Visible = 1 << 3,
+    CanTake = 1 << 4
 
 }
 public class GameData{
@@ -151,6 +152,7 @@ public class GameData{
         #region Read Objects
 
             lines = GameF.ReadCSV(loadFolderLocation + "/objects" + fileType);
+
             List<Object> objectList = new List<Object>{};
             List<string> knownWordsList = new List<string>{};
             int knownWordsIndexCounter = 0;
@@ -160,7 +162,7 @@ public class GameData{
 
                 string name;
                 string description;
-                int holder;
+                int holder = -1;
                 string[] objectAdjectives;
                 string[] objectSynonyms;
                 TypeFlags flags = TypeFlags.None;
@@ -169,7 +171,7 @@ public class GameData{
 
                 name = lines[i][1];
                 description = lines[i][2];
-                holder = int.Parse(lines[i][3]);
+                int.TryParse(lines[i][3], out holder);
                 //el mong us
                 objectAdjectives = lines[i][4].Split(',');
                 objectSynonyms = lines[i][5].Split(',');
@@ -462,218 +464,222 @@ public class GameData{
 
     }
 
-    private void OldLoad(){
+    #region Verb Subroutines
 
-        articles = new string[]{
+        public void VGo(){
 
-            "a",
-            "an",
-            "the"
+            string direction = objects[Parser.directObjectID].name;
 
-        };
-        conjunctions = new string[]{
+            switch(direction){
 
-            "and",
-            "then"
+                case "north":
+                    VGoNorth();
+                    break;
+                case "northeast":
+                    VGoNorthEast();
+                    break;
+                case "east":
+                    VGoEast();
+                    break;
+                case "southeast":
+                    VGoSouthEast();
+                    break;
+                case "south":
+                    VGoSouth();
+                    break;
+                case "southwest":
+                    VGoSouthWest();
+                    break;
+                case "west":
+                    VGoWest();
+                    break;
+                case "northwest":
+                    VGoNorthWest();
+                    break;
+                case "up":
+                    VGoUp();
+                    break;
+                case "down":
+                    VGoDown();
+                    break;
+                default:
+                    GameF.Print("You can't go that way.");
+                    break;
 
-        };
-        prepositions = new WordSynonymPair[]{
+            }
 
-            new WordSynonymPair("under", 0),
-            new WordSynonymPair("below", 0),
-            new WordSynonymPair("underneath", 0),
-            new WordSynonymPair("in", 3),
-            new WordSynonymPair("through", 3),
-            new WordSynonymPair("using", 5),
-            new WordSynonymPair("with", 5),
-            new WordSynonymPair("at", 7)
+        }
+        public void VGoNorth(){
 
-        };
-        verbs = new WordSynonymPair[]{
+            MovePlayer(0);
 
-            new WordSynonymPair("look", 0),
-            new WordSynonymPair("examine", 0),
-            new WordSynonymPair("throw", 2),
-            new WordSynonymPair("stare", 0),
-            new WordSynonymPair("launch", 2),
-            new WordSynonymPair("destroy", 5),
-            new WordSynonymPair("demolish", 5),
-            new WordSynonymPair("kill", 7),
-            new WordSynonymPair("fight", 7)
+        }
+        public void VGoNorthEast(){
 
-        };
-        knownWords = new string[]{
+            MovePlayer(1);
 
-            "old",
-            "rusty",
-            "iron",
-            "sword",
-            "box"
+        }
+        public void VGoEast(){
 
-        };
-        objects = new Object[]{
+            MovePlayer(2);
 
-            new Object(
+        }
+        public void VGoSouthEast(){
 
-                "offscreen",
-                "",
-                0,
-                TypeFlags.None,
-                GameF.isolated,
-                null
+            MovePlayer(3);
 
-            ),
-            new Object(
+        }
+        public void VGoSouth(){
 
-                "rooms",
-                "",
-                0,
-                TypeFlags.None,
-                GameF.isolated,
-                null
+            MovePlayer(4);
 
-            ),
-            new Object(
+        }
+        public void VGoSouthWest(){
 
-                "kitchen",
-                "Kitchen",
-                1,
-                TypeFlags.None,
-                new int[]{
+            MovePlayer(5);
 
-                    3,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1
+        }
+        public void VGoWest(){
 
-                },
-                null
+            MovePlayer(6);
 
-            ),
-            new Object(
+        }
+        public void VGoNorthWest(){
 
-                "field",
-                "grassy field",
-                1,
-                TypeFlags.None,
-                new int[]{
+            MovePlayer(7);
 
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    2,
-                    -1,
-                    -1,
-                    -1,
-                    -1,
-                    -1
+        }
+        public void VGoUp(){
 
+            MovePlayer(8);
 
-                },
-                null
+        }
+        public void VGoDown(){
 
-            ),
-            new Object(
+            MovePlayer(9);
 
-                "sword",
-                "rusty sword",
-                3,
-                TypeFlags.Weapon,
-                GameF.isolated,
-                null
+        }
+        public void VInventory(){
 
-            ),
-            new Object(
+            int[] heldObjects = GameF.GetHeldObjects(GameF.SearchForObject("player"));
+            if(heldObjects.Length == 0){
 
-                "box",
-                "iron box",
-                3,
-                TypeFlags.None,
-                GameF.isolated,
-                null
+                GameF.Print("Your inventory is empty.");
 
-            )
+            }
+            else{
 
-        };
-        objectWordTable = new int[,]{
+                GameF.Print("Your inventory contains:");
+                foreach(int i in heldObjects){
 
-            {4, 0},
-            {4, 2},
-            {4, 3},
-            {5, 0},
-            {5, 1},
-            {5, 2},
-            {5, 4}
-
-        };
-        syntaxes = new Syntax[]{
-
-            new Syntax(
-
-                0,
-                -1,
-                TypeFlags.None,
-                -1,
-                TypeFlags.None,
-                new Action[]{
-
-                    Look
+                    GameF.Print(objects[i].description + ".");
 
                 }
 
-            )
+            }
+            
+        }
+        public void VTake(){
 
-        };
+            string preposition = "";
 
-    }
+            if(Parser.preposition1ID != -1){
 
-    #region Verb Subroutines
+                preposition = prepositions[Parser.preposition1ID].word;
 
-        public void Look(){
+            }
+            if(preposition == "up" || preposition == ""){
 
-            GameF.Print("yello");
+                PlaceObject(Parser.directObjectID, GameF.SearchForObject("player"));
+                GameF.Print("Taken.");
+
+            }
+            else if(preposition == "all"){
+
+                int[] surroundingObjects = GameF.GetHeldObjects(objects[GameF.SearchForObject("player")].holderID, TypeFlags.CanTake);
+
+                for(int i = 0; i < surroundingObjects.Length; i++){
+
+                    PlaceObject(surroundingObjects[i], GameF.SearchForObject("player"));
+                    GameF.Print("Taken.");
+
+                }
+
+            }
 
         }
-        public void Fight(){
+        public void VLook(){
 
-            GameF.Print("You are fighting the " + Game.GetInstance().data.objects[Parser.directObjectID].description + " " +
-                Game.GetInstance().data.prepositions[Parser.preposition2ID].word +  " your " + Game.GetInstance().data.objects[Parser.indirectObjectID].description + ".");
+            string description = objects[objects[GameF.SearchForObject("player")].holderID].description;
+            //description = char.ToUpper(description[0]) + description.Substring(1);
+            GameF.Print(description);
+            //Display surrounding objects
+
+        }
+        public void VLookAround(){
+
+            int directObjectIndex = Parser.directObjectID;
+            int playerIndex = GameF.SearchForObject("player");
+            int currentLocationIndex = objects[playerIndex].holderID;
+
+            int[] surroundingObjects = GameF.GetHeldObjects(currentLocationIndex);
+            if((surroundingObjects.Contains(directObjectIndex) || directObjectIndex == currentLocationIndex) && 
+                objects[directObjectIndex].flags.HasFlag(objects[Parser.syntaxID].flags)){
+
+                VLook();
+
+            }
+            else{
+
+                GameF.Print("You can't see any " + Parser.directObjectInput + " here.");
+
+            }
 
         }
 
     #endregion
     #region Object Subroutines
-
-        public void BlueKeyF(){
+        public void PlayerF(){
 
             if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
 
-                GameF.Print("You are looking at the blue key.");
+                GameF.Print("That's difficult unless your eyes are prehensible.");
 
             }
 
         }
-        public void RedKeyF(){
 
-            if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
+    #endregion
+    #region Other
+        private int[] GetPossibleDirections(){
 
-                GameF.Print("You are looking at the red key.");
+            Object[] objects = Game.GetInstance().data.objects;
+            return objects[objects[GameF.SearchForObject("player")].holderID].travelTable;
+
+        }
+        private void MovePlayer(int direction){
+
+            int[] travelTable = GetPossibleDirections();
+            if(travelTable[direction] == -1){
+
+                GameF.Print("You can't go that way.");
+                return;
 
             }
+            else{
+
+                objects[GameF.SearchForObject("player")].holderID = travelTable[direction];
+
+            }
+            VLook();
+
+        } 
+        private void PlaceObject(int obj, int holder){
+
+            objects[obj].holderID = holder;
 
         }
 
     #endregion
 
 }
-
-
-
-

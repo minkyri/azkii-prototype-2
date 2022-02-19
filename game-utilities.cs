@@ -180,5 +180,55 @@ public static class GameF{
         }
 
     }
+    public static int SearchForObject(string name){
+
+        Object[] objects = Game.GetInstance().data.objects;
+        for(int i = 0; i < objects.Length; i++){
+
+            if(objects[i].name == name){
+
+                return i;
+
+            }
+
+        }
+
+        return -1;
+
+    }
+    public static int[] GetHeldObjects(int holderID){
+
+        List<int> heldIDs = new List<int>{};
+        Object[] objects = Game.GetInstance().data.objects;
+        for(int i = 0; i < objects.Length; i++){
+
+            if(objects[i].holderID == holderID){
+
+                heldIDs.Add(i);
+
+            }
+
+        }
+
+        return heldIDs.ToArray();
+
+    }
+    public static int[] GetHeldObjects(int holderID, TypeFlags flags){
+
+        List<int> heldIDs = new List<int>{};
+        Object[] objects = Game.GetInstance().data.objects;
+        for(int i = 0; i < objects.Length; i++){
+
+            if(objects[i].holderID == holderID && objects[i].flags.HasFlag(flags)){
+
+                heldIDs.Add(i);
+
+            }
+
+        }
+
+        return heldIDs.ToArray();
+
+    }
 
 }

@@ -1,0 +1,15 @@
+VERB,SYNONYMS
+go,"travel,walk,run"
+inventory,i
+north,n
+northeast,ne
+east,e
+southeast,se
+south,s
+southwest,sw
+west,w
+northwest,nw
+up,u
+down,d
+look,l
+take,"grab,snatch,pick"

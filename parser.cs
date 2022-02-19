@@ -5,6 +5,9 @@ public static class Parser{
     public static int directObjectID = -1;
     public static int preposition2ID = -1;
     public static int indirectObjectID = -1;
+    public static int syntaxID = -1;
+    public static string directObjectInput = "";
+    public static string indirectObjectInput = "";
 
     public static void Parse(string input){
 
@@ -19,6 +22,7 @@ public static class Parser{
             directObjectID = -1;
             preposition2ID = -1;
             indirectObjectID = -1;
+            syntaxID = -1;
 
             verbID = GetWSPairIndex(command[0], Game.GetInstance().data.verbs);
 
@@ -39,6 +43,7 @@ public static class Parser{
                     GameF.Print("I don't know the word \"" + command[0] + "\".");
 
                 }
+
                 return;
 
             }
@@ -108,6 +113,9 @@ public static class Parser{
 
             }
 
+            directObjectInput = objectPhrases[0];
+            indirectObjectInput = objectPhrases[1];
+
             if(objectPhrases[0] != ""){
 
                 directObjectID = ScoreObjects(objectPhrases[0]);
@@ -176,6 +184,7 @@ public static class Parser{
 
                 if(
 
+                    !foundSyntax &&
                     syntaxes[s].verbID == verbID &&
                     syntaxes[s].preposition1ID == preposition1ID &&
                     directObjectFlags.HasFlag(syntaxes[s].directObjectFlags) &&
@@ -184,14 +193,33 @@ public static class Parser{
 
                 ){
 
-                    foundSyntax = true;
-                    foreach(Action action in syntaxes[s].subroutines){
+                    if(!(directObjectID != -1 && syntaxes[s].directObjectFlags == TypeFlags.None ||
+                        indirectObjectID != -1 && syntaxes[s].indirectObjectFlags == TypeFlags.None)){
 
-                        action();
+                        foundSyntax = true;
+                        syntaxID = s;
+                        for(int a = 0; a < syntaxes[s].subroutines.Length; a++){
+
+                            syntaxes[s].subroutines[a]();
+
+                        }
 
                     }
 
                 }
+
+            }
+
+            if(directObjectID != -1 && directObjectFlags == TypeFlags.None){
+
+                GameF.Print("There is no such object called " + objects[directObjectID].name + ".");
+                return;
+
+            }
+            if(indirectObjectID != -1 && indirectObjectFlags == TypeFlags.None){
+
+                GameF.Print("There is no such object called " + objects[indirectObjectID].name + ".");
+                return;
 
             }
 
@@ -201,6 +229,8 @@ public static class Parser{
                 return;
 
             }
+
+            if(i < commands.Length-1)GameF.Print("");
 
         }
 

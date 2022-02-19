@@ -1,0 +1,19 @@
+VERB,PREPOSITION,DIRECT OBJECT FLAGS,PREPOSITION,INDIRECT OBJECT FLAGS,SUBROUTINES
+go,,Direction,,,VGo
+inventory,,,,,VInventory
+north,,,,,VGoNorth
+northeast,,,,,VGoNorthEast
+east,,,,,VGoEast
+southeast,,,,,VGoSouthEast
+south,,,,,VGoSouth
+southwest,,,,,VGoSouthWest
+west,,,,,VGoWest
+northwest,,,,,VGoNorthWest
+up,,,,,VGoUp
+down,,,,,VGoDown
+look,,,,,VLook
+look,around,,,,VLook
+look,around,Visible,,,VLookAround
+take,,CanTake,,,VTake
+pick,up,CanTake,,,VTake
+take,all,,,,VTake

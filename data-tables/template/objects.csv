@@ -1,0 +1,14 @@
+ID,NAME,DESCRIPTION,HOLDER,ADJECTIVES,SYNONYMS,N ,NE,E,SE,S,SW,W,NW,U,D,FLAGS,SUBROUTINE
+0,offscreen,,0,,,,,,,,,,,,,,
+1,player,,,,"me,myself",,,,,,,,,,,Player,PlayerF
+2,north,,,,n,,,,,,,,,,,Direction,
+3,northeast,,,,ne,,,,,,,,,,,Direction,
+4,east,,,,e,,,,,,,,,,,Direction,
+5,southeast,,,,se,,,,,,,,,,,Direction,
+6,south,,,,s,,,,,,,,,,,Direction,
+7,southwest,,,,sw,,,,,,,,,,,Direction,
+8,west,,,,w,,,,,,,,,,,Direction,
+9,northwest,,,,nw,,,,,,,,,,,Direction,
+10,up,,,,u,,,,,,,,,,,Direction,
+11,down,,,,d,,,,,,,,,,,Direction,
+12,inventory,,1,,,,,,,,,,,,,Container,
