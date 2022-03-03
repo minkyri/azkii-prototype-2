@@ -12,6 +12,7 @@ northwest,,,,,VGoNorthWest
 up,,,,,VGoUp
 down,,,,,VGoDown
 look,,,,,VLook
+look,at,Visible,,,VLookAt
 look,around,,,,VLook
 look,around,Visible,,,VLookAround
 take,,CanTake,,,VTake

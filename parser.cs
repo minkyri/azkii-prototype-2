@@ -6,9 +6,9 @@ public static class Parser{
     public static int preposition2ID = -1;
     public static int indirectObjectID = -1;
     public static int syntaxID = -1;
+    public static int itObjectPointer = -1;
     public static string directObjectInput = "";
     public static string indirectObjectInput = "";
-
     public static void Parse(string input){
 
         string cleanInput = CleanInput(input.ToLower());
@@ -113,6 +113,25 @@ public static class Parser{
 
             }
 
+            if(itObjectPointer != -1){
+
+                string lastObjectInput = "";
+                if(directObjectInput != ""){
+
+                    lastObjectInput = directObjectInput;
+
+                }
+                if(indirectObjectInput != ""){
+
+                    lastObjectInput = indirectObjectInput;
+
+                }
+
+                if(objectPhrases[0] == "it")objectPhrases[0] = lastObjectInput;
+                if(objectPhrases[1] == "it")objectPhrases[1] = lastObjectInput;
+
+            }
+            
             directObjectInput = objectPhrases[0];
             indirectObjectInput = objectPhrases[1];
 
@@ -128,6 +147,12 @@ public static class Parser{
                 else if(directObjectID == -2){
 
                     GameF.Print("You need to be more specific than that.");
+                    return;
+
+                }
+                else if(directObjectID == -3){
+
+                    GameF.Print("I can't see what you're refering to.");
                     return;
 
                 }
@@ -149,6 +174,12 @@ public static class Parser{
                     return;
 
                 }
+                else if(indirectObjectID == -3){
+
+                    GameF.Print("I can't see what you're refering to.");
+                    return;
+
+                }
 
             }
 
@@ -165,60 +196,61 @@ public static class Parser{
             TypeFlags directObjectFlags = TypeFlags.None;
             TypeFlags indirectObjectFlags = TypeFlags.None;
 
+            Func<bool> directObjectAction = null;
+            Func<bool> indirectObjectAction = null;
+            Func<bool> verbAction = null;
+
             bool foundSyntax = false;
 
             if(directObjectID != -1){
                 
-                directObjectFlags = objects[directObjectID].flags;
-                if(objects[directObjectID].subroutine != null)objects[directObjectID].subroutine();
+                directObjectFlags = objects[directObjectID].flags;           
 
             }
             if(indirectObjectID != -1){
                 
                 indirectObjectFlags = objects[indirectObjectID].flags;
-                if(objects[indirectObjectID].subroutine != null)objects[indirectObjectID].subroutine();
 
             }
 
-            for(int s = 0; s < syntaxes.Length; s++){
+            for(int s = 0; s < syntaxes.Length && !foundSyntax; s++){
 
                 if(
 
-                    !foundSyntax &&
                     syntaxes[s].verbID == verbID &&
                     syntaxes[s].preposition1ID == preposition1ID &&
-                    directObjectFlags.HasFlag(syntaxes[s].directObjectFlags) &&
-                    syntaxes[s].preposition2ID == preposition2ID &&
-                    indirectObjectFlags.HasFlag(syntaxes[s].indirectObjectFlags)
+                    syntaxes[s].preposition2ID == preposition2ID
 
                 ){
 
-                    if(!(directObjectID != -1 && syntaxes[s].directObjectFlags == TypeFlags.None ||
-                        indirectObjectID != -1 && syntaxes[s].indirectObjectFlags == TypeFlags.None)){
-
-                        foundSyntax = true;
-                        syntaxID = s;
-                        for(int a = 0; a < syntaxes[s].subroutines.Length; a++){
-
-                            syntaxes[s].subroutines[a]();
-
-                        }
-
-                    }
+                    foundSyntax = true;
+                    syntaxID = s;
 
                 }
 
             }
 
-            if(directObjectID != -1 && directObjectFlags == TypeFlags.None){
+            // if(directObjectID != -1 && directObjectFlags == TypeFlags.None){
 
-                GameF.Print("There is no such object called " + objects[directObjectID].name + ".");
+            //     GameF.Print("There is no such object called " + directObjectInput + ".");
+            //     return;
+
+            // }
+            if(directObjectID == -1 && syntaxID != -1 && syntaxes[syntaxID].directObjectFlags != TypeFlags.None){
+
+                GameF.Print("There seems to be a noun missing in that sentence.");
                 return;
 
             }
-            if(indirectObjectID != -1 && indirectObjectFlags == TypeFlags.None){
+            // if(indirectObjectID != -1 && indirectObjectFlags == TypeFlags.None){
 
-                GameF.Print("There is no such object called " + objects[indirectObjectID].name + ".");
+            //     GameF.Print("There is no such object called " + indirectObjectInput + ".");
+            //     return;
+
+            // }
+            if(indirectObjectID == -1 && syntaxID != -1 &&  syntaxes[syntaxID].indirectObjectFlags != TypeFlags.None){
+
+                GameF.Print("There seems to be a noun missing in that sentence.");
                 return;
 
             }
@@ -227,6 +259,24 @@ public static class Parser{
 
                 GameF.Print("That sentence isn't one that I recognise.");
                 return;
+
+            }
+
+            verbAction = syntaxes[syntaxID].subroutine;
+            if(indirectObjectID != -1 && objects[indirectObjectID].subroutine != null){
+                
+                indirectObjectAction = objects[indirectObjectID].subroutine;
+
+            }
+            if(directObjectID != -1 && objects[directObjectID].subroutine != null){
+                
+                directObjectAction = objects[directObjectID].subroutine;
+
+            }
+
+            if(!ExecuteActions(indirectObjectAction, directObjectAction, verbAction)){
+
+                GameF.Print("You can't do that!");
 
             }
 
@@ -331,6 +381,12 @@ public static class Parser{
     }
     public static int[] WordToObjectIndexes(string word){
         
+        if(itObjectPointer != -1 && word == "it"){
+
+            return new int[]{itObjectPointer};
+
+        }
+
         int[,] objectWordTable = Game.GetInstance().data.objectWordTable;
         List<int> objectIndexes = new List<int>{};
 
@@ -365,6 +421,12 @@ public static class Parser{
         List<int> objectScores = new List<int>{};
 
         for(int b = 0; b < splitPhrase.Length; b++){
+
+            if(itObjectPointer == -1 && splitPhrase[b] == "it"){
+
+                return -3;
+
+            }
 
             //GameF.Print(splitPhrase[b] + "  len: " + splitPhrase[b].Length);
             int[] objectIndexes = WordToObjectIndexes(splitPhrase[b]);
@@ -407,29 +469,52 @@ public static class Parser{
 
         int highestScore = 0;
         int highscoreObject = -1;
+        int highestScoreIndex = -1;
 
         for(int i = 0; i < objectScores.Count; i++){
-
-            for(int j = 0; j < objectScores.Count; j++){
-
-                if(objectScores[i] == objectScores[j] && i != j){
-
-                    return -2;
-
-                }
-
-            }
 
             if(objectScores[i] > highestScore){
 
                 highestScore = objectScores[i];
                 highscoreObject = objects[i];
+                highestScoreIndex = i;
 
             }
 
         }
 
+        for(int j = 0; j < objectScores.Count; j++){
+
+            if(objectScores[j] == highestScore && j != highestScoreIndex){
+
+                return -2;
+
+            }
+
+        }
+
+        itObjectPointer = highscoreObject;
         return highscoreObject;
+
+    }
+    public static bool ExecuteActions(Func<bool> IO, Func<bool> DO, Func<bool> V){
+
+        if(V != null && V()){
+
+            return true;
+
+        }
+        if(IO != null && IO()){
+
+            return true;
+
+        }
+        if(DO != null && DO()){
+
+            return true;
+
+        }
+        return false;
 
     }
 

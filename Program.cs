@@ -1,4 +1,5 @@
-﻿GameF.Print("\nAZKII PROTOTYPE 2");
+﻿Game.GetInstance();
+GameF.DisplayGameData();
 
 while(!Game.GetInstance().isFinished){
 

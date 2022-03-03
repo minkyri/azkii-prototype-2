@@ -9,7 +9,10 @@ public enum TypeFlags{
     Direction = 1 << 1,
     Container = 1 << 2,
     Visible = 1 << 3,
-    CanTake = 1 << 4
+    CanTake = 1 << 4,
+    TryTake = 1 << 5,
+    Open = 1 << 6,
+    Closed = 1 << 7
 
 }
 public class GameData{
@@ -31,7 +34,8 @@ public class GameData{
 
     private void LoadGame(){
 
-        string loadFolderLocation = @GameF.Input("Enter folder to load game from.");
+        string loadFolderLocation = @"E:\cs-project\solutions\azkii-prototype-2\data-tables\example";
+        //@GameF.Input("Enter folder to load game from.");
 
         string[] filesToCheckFor = new string[]{
 
@@ -166,7 +170,7 @@ public class GameData{
                 string[] objectAdjectives;
                 string[] objectSynonyms;
                 TypeFlags flags = TypeFlags.None;
-                Action subroutine;
+                Func<bool> subroutine;
                 int[] travelTable = new int[10];
 
                 name = lines[i][1];
@@ -186,18 +190,18 @@ public class GameData{
                 
                 foreach(string adjective in objectAdjectives){
 
-                    if(!knownWordsList.Contains(adjective) && adjective != ""){
+                    if(adjective != ""){
                         
                         knownWordsList.Add(adjective);
                         objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
                         knownWordsIndexCounter++;
 
-                    }   
+                    }
 
                 }
                 foreach(string synonym in objectSynonyms){
 
-                    if(!knownWordsList.Contains(synonym) && synonym != ""){
+                    if(synonym != ""){
                         
                         knownWordsList.Add(synonym);
                         objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
@@ -248,7 +252,7 @@ public class GameData{
                         return;
 
                     }
-                    subroutine = (Action)Delegate.CreateDelegate(typeof(Action), this, theMethod);
+                    subroutine = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), this, theMethod);
                     //subroutine();
                     //GameF.Print(lines[i][17]);
 
@@ -272,6 +276,20 @@ public class GameData{
 
             }
             
+            
+            objectList.Add(new Object(
+
+                "it",
+                "",
+                0,
+                TypeFlags.None,
+                GameF.isolated,
+                null
+
+            ));
+            knownWordsList.Add("it");
+            objectWordList.Add(new int[]{objectList.Count-1,knownWordsList.Count-1});
+
             objects = objectList.ToArray();
             knownWords = knownWordsList.ToArray();
             
@@ -296,7 +314,7 @@ public class GameData{
                 TypeFlags directObjectFlags = TypeFlags.None;
                 string preposition2;
                 TypeFlags indirectObjectFlags = TypeFlags.None;
-                Action[] subroutines;
+                Func<bool> subroutine;
 
                 verb = lines[i][0];
                 preposition1 = lines[i][1];
@@ -347,32 +365,37 @@ public class GameData{
 
                 }
 
-                string[] actionStrings = lines[i][5].Split(',');
-                List<Action> actionList = new List<Action>{};
-                foreach(string actionString in actionStrings){
+                // string[] actionStrings = lines[i][5].Split(',');
+                // List<Action> actionList = new List<Action>{};
+                // foreach(string actionString in actionStrings){
 
-                    if(actionString != ""){
+                //     if(actionString != ""){
 
-                        Type thisType = this.GetType();
-                        MethodInfo theMethod = thisType.GetMethod(actionString);
-                        if(theMethod == null){
+                //         Type thisType = this.GetType();
+                //         MethodInfo theMethod = thisType.GetMethod(actionString);
+                //         if(theMethod == null){
 
-                            GameF.Print("The subroutine " + actionString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
-                            LoadGame();
-                            return;
+                //             GameF.Print("The subroutine " + actionString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                //             LoadGame();
+                //             return;
 
-                        }
-                        actionList.Add((Action)Delegate.CreateDelegate(typeof(Action), this, theMethod));
+                //         }
+                //         actionList.Add((Action)Delegate.CreateDelegate(typeof(Action), this, theMethod));
 
-                    }
-                    else{
+                //     }
+                //     else{
 
-                        actionList.Add(null);
+                //         actionList.Add(null);
 
-                    }
+                //     }
 
-                }
-                subroutines = actionList.ToArray();
+                // }
+                // subroutines = actionList.ToArray();
+
+                string actionString = lines[i][5];
+                Type thisType = this.GetType();
+                MethodInfo theMethod = thisType.GetMethod(actionString);
+                subroutine = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), this, theMethod);
                 
                 int verbID = Parser.GetWSPairIndex(verb, verbs);
                 int preposition1ID = Parser.GetWSPairIndex(preposition1, prepositions);
@@ -409,7 +432,7 @@ public class GameData{
                     directObjectFlags,
                     preposition2ID,
                     indirectObjectFlags,
-                    subroutines
+                    subroutine
 
                 ));
 
@@ -466,172 +489,186 @@ public class GameData{
 
     #region Verb Subroutines
 
-        public void VGo(){
+        #region Directions
+            public bool VGo(){
 
-            string direction = objects[Parser.directObjectID].name;
+                string direction = objects[Parser.directObjectID].name;
 
-            switch(direction){
+                switch(direction){
 
-                case "north":
-                    VGoNorth();
-                    break;
-                case "northeast":
-                    VGoNorthEast();
-                    break;
-                case "east":
-                    VGoEast();
-                    break;
-                case "southeast":
-                    VGoSouthEast();
-                    break;
-                case "south":
-                    VGoSouth();
-                    break;
-                case "southwest":
-                    VGoSouthWest();
-                    break;
-                case "west":
-                    VGoWest();
-                    break;
-                case "northwest":
-                    VGoNorthWest();
-                    break;
-                case "up":
-                    VGoUp();
-                    break;
-                case "down":
-                    VGoDown();
-                    break;
-                default:
-                    GameF.Print("You can't go that way.");
-                    break;
+                    case "north":
+                        VGoNorth();
+                        break;
+                    case "northeast":
+                        VGoNorthEast();
+                        break;
+                    case "east":
+                        VGoEast();
+                        break;
+                    case "southeast":
+                        VGoSouthEast();
+                        break;
+                    case "south":
+                        VGoSouth();
+                        break;
+                    case "southwest":
+                        VGoSouthWest();
+                        break;
+                    case "west":
+                        VGoWest();
+                        break;
+                    case "northwest":
+                        VGoNorthWest();
+                        break;
+                    case "up":
+                        VGoUp();
+                        break;
+                    case "down":
+                        VGoDown();
+                        break;
+                    default:
+                        GameF.Print("You should specify a direction.");
+                        break;
+
+                }
+                return true;
 
             }
+            public bool VGoNorth(){
 
-        }
-        public void VGoNorth(){
+                MovePlayer(0);
+                return true;
 
-            MovePlayer(0);
+            }
+            public bool VGoNorthEast(){
 
-        }
-        public void VGoNorthEast(){
+                MovePlayer(1);
+                return true;
 
-            MovePlayer(1);
+            }
+            public bool VGoEast(){
 
-        }
-        public void VGoEast(){
+                MovePlayer(2);
+                return true;
 
-            MovePlayer(2);
+            }
+            public bool VGoSouthEast(){
 
-        }
-        public void VGoSouthEast(){
+                MovePlayer(3);
+                return true;
 
-            MovePlayer(3);
+            }
+            public bool VGoSouth(){
 
-        }
-        public void VGoSouth(){
+                MovePlayer(4);
+                return true;
 
-            MovePlayer(4);
+            }
+            public bool VGoSouthWest(){
 
-        }
-        public void VGoSouthWest(){
+                MovePlayer(5);
+                return true;
 
-            MovePlayer(5);
+            }
+            public bool VGoWest(){
 
-        }
-        public void VGoWest(){
+                MovePlayer(6);
+                return true;
 
-            MovePlayer(6);
+            }
+            public bool VGoNorthWest(){
 
-        }
-        public void VGoNorthWest(){
+                MovePlayer(7);
+                return true;
 
-            MovePlayer(7);
+            }
+            public bool VGoUp(){
 
-        }
-        public void VGoUp(){
+                MovePlayer(8);
+                return true;
 
-            MovePlayer(8);
-
-        }
-        public void VGoDown(){
+            }
+            public bool VGoDown(){
 
             MovePlayer(9);
+            return true;
 
         }
-        public void VInventory(){
+        #endregion
+        public bool VInventory(){
 
-            int[] heldObjects = GameF.GetHeldObjects(GameF.SearchForObject("player"));
+            int playerID = GameF.SearchForObject(player);
+            int[] heldObjects = GameF.GetHeldObjects(playerID, TypeFlags.CanTake);
             if(heldObjects.Length == 0){
 
-                GameF.Print("Your inventory is empty.");
+                GameF.Print("You are empty handed.");
+                return true;
 
             }
             else{
 
-                GameF.Print("Your inventory contains:");
+                GameF.Print("You are holding:");
                 foreach(int i in heldObjects){
 
-                    GameF.Print(objects[i].description + ".");
+                    objects[i].holderID = playerID;
+                    GameF.Print("   A " + objects[i].description  + ".");
 
                 }
+                return true;
 
             }
             
         }
-        public void VTake(){
+        public bool VTake(){
 
-            string preposition = "";
-
-            if(Parser.preposition1ID != -1){
-
-                preposition = prepositions[Parser.preposition1ID].word;
-
-            }
-            if(preposition == "up" || preposition == ""){
-
-                PlaceObject(Parser.directObjectID, GameF.SearchForObject("player"));
-                GameF.Print("Taken.");
-
-            }
-            else if(preposition == "all"){
-
-                int[] surroundingObjects = GameF.GetHeldObjects(objects[GameF.SearchForObject("player")].holderID, TypeFlags.CanTake);
-
-                for(int i = 0; i < surroundingObjects.Length; i++){
-
-                    PlaceObject(surroundingObjects[i], GameF.SearchForObject("player"));
-                    GameF.Print("Taken.");
-
-                }
-
-            }
+            return true;
 
         }
-        public void VLook(){
+        public bool VLook(){
 
-            string description = objects[objects[GameF.SearchForObject("player")].holderID].description;
-            //description = char.ToUpper(description[0]) + description.Substring(1);
+            int currentLocation = GameF.GetObjectHolder(player);
+            string description = objects[currentLocation].description;
             GameF.Print(description);
-            //Display surrounding objects
+            if(objects[currentLocation].subroutine != null){
+
+                Parser.verbID = Parser.GetWSPairIndex("look", verbs);
+                objects[currentLocation].subroutine();
+
+            }
+            return true;
 
         }
-        public void VLookAround(){
+        public bool VLookAround(){
 
-            int directObjectIndex = Parser.directObjectID;
-            int playerIndex = GameF.SearchForObject("player");
-            int currentLocationIndex = objects[playerIndex].holderID;
-
-            int[] surroundingObjects = GameF.GetHeldObjects(currentLocationIndex);
-            if((surroundingObjects.Contains(directObjectIndex) || directObjectIndex == currentLocationIndex) && 
-                objects[directObjectIndex].flags.HasFlag(objects[Parser.syntaxID].flags)){
+            if(InRoom(Parser.directObjectID)){
 
                 VLook();
 
             }
+            return true;
+
+        }
+        public bool VLookAt(){
+
+            int currentLocation = GameF.GetObjectHolder(player);
+            int objectLocation = objects[Parser.directObjectID].holderID;
+
+            if(Parser.directObjectID == currentLocation){
+
+                if(objects[currentLocation].subroutine != null)return objects[currentLocation].subroutine();
+                else return VLook();
+
+            }
+            if(!InRoom(Parser.directObjectID)){
+
+                return true;
+
+            }
+            if(objects[Parser.directObjectID].subroutine != null && objects[Parser.directObjectID].subroutine())return true;
             else{
 
-                GameF.Print("You can't see any " + Parser.directObjectInput + " here.");
+                GameF.Print("There's nothing special about the " + objects[Parser.directObjectID].description);
+                return true;
 
             }
 
@@ -639,22 +676,52 @@ public class GameData{
 
     #endregion
     #region Object Subroutines
-        public void PlayerF(){
+        public bool PlayerF(){
 
-            if(Parser.GetWSPairIndex("look", verbs) == Parser.verbID){
+            if(GameF.CompareVerb("look")){
 
                 GameF.Print("That's difficult unless your eyes are prehensible.");
+                return true;
 
             }
+            return false;
+
+        }
+        public bool SunnyF(){
+
+            if(GameF.CompareVerb("look")){
+
+                GameF.Print("Sunny is a golden cocker spaniel.");
+                return true;
+
+            }
+            return false;
+
+        }
+        public bool BedroomF(){
+
+            if(GameF.CompareVerb("look")){
+
+                GameF.Print("You are in Kyri's bedroom.");
+                return true;
+
+            }
+            return false;
 
         }
 
     #endregion
     #region Other
+        
+        public void StartGame(){
+
+            VLook();
+
+        }
         private int[] GetPossibleDirections(){
 
             Object[] objects = Game.GetInstance().data.objects;
-            return objects[objects[GameF.SearchForObject("player")].holderID].travelTable;
+            return objects[GameF.GetObjectHolder(player)].travelTable;
 
         }
         private void MovePlayer(int direction){
@@ -668,18 +735,71 @@ public class GameData{
             }
             else{
 
-                objects[GameF.SearchForObject("player")].holderID = travelTable[direction];
+                objects[GameF.SearchForObject(player)].holderID = travelTable[direction];
 
             }
             VLook();
 
         } 
-        private void PlaceObject(int obj, int holder){
+        private bool InRoom(int id){
 
-            objects[obj].holderID = holder;
+            int currentLocation = GameF.GetObjectHolder(player);
+
+            if(objects[Parser.directObjectID].holderID == currentLocation)return true;
+            else GameF.Print("You can't see any " + Parser.directObjectInput + " here!");
+            return false;
 
         }
 
     #endregion
+    #region Macros
+
+        string player = "me";
+        string[] stupid = new string[]{
+
+            "What a concept!",
+            "You can't be serious."
+
+        };
+
+    #endregion
 
 }
+
+#region Property Definitions
+
+    public class Container : Property{
+
+        public int capacity;
+
+        public Container(int _capacity){
+
+            capacity = _capacity;
+
+        }
+
+    }
+    public class Weapon : Property{
+
+        public float damage;
+
+        public Weapon(int _damage){
+
+            damage = _damage;
+
+        }
+
+    }
+    public class Actor: Property{
+
+        public float health;
+
+        public Actor(float _health){
+
+            health = _health;
+
+        }
+
+    }
+
+#endregion

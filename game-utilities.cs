@@ -196,6 +196,13 @@ public static class GameF{
         return -1;
 
     }
+    public static int GetObjectHolder(string name){
+
+        int obj = SearchForObject(name);
+        if(obj == -1)return -1;
+        return Game.GetInstance().data.objects[obj].holderID;
+
+    }
     public static int[] GetHeldObjects(int holderID){
 
         List<int> heldIDs = new List<int>{};
@@ -228,6 +235,21 @@ public static class GameF{
         }
 
         return heldIDs.ToArray();
+
+    }
+    public static bool CompareVerb(string verb){
+
+        return Parser.GetWSPairIndex(verb, Game.GetInstance().data.verbs) == Parser.verbID;
+
+    }
+    public static bool ComparePreposition1(string preposition){
+
+        return Parser.GetWSPairIndex(preposition, Game.GetInstance().data.prepositions) == Parser.preposition1ID;
+
+    }
+    public static bool ComparePreposition2(string preposition){
+
+        return Parser.GetWSPairIndex(preposition, Game.GetInstance().data.prepositions) == Parser.preposition2ID;
 
     }
 

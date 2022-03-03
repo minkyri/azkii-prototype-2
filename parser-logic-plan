@@ -1,42 +1,17 @@
-Original input:
-"open the mailbox with the pliers"
-"turn the light on with the stick"
-"look at the planet with the telescope"
+>: input
+?: output
 
-Remove articles:
-"open mailbox with pliers"
-"turn light on with stick"
-"look at planet with telescope"
+> Look at
+? Look at what?
 
-Take first word as the verb:
-verb = "open", "mailbox with pliers"
-verb = "turn", "light on with stick"
-verb = "look", "at planet with telescope"
+    > the dog
+    ? *print dog description*
 
-Loop over remaining input, get first and second prepositions, then tokenize with prepositions:
-prep1 = "with", prep2 = null, "mailbox", "pliers"
-prep1 = "on", prep2 = with, "light", "stick"
-prep1 = "at", prep2 = with, "planet", "telescope"
+> Fight
+? What do you want to fight?
 
+    > the dog
+    ? What do you want to fight the dog with
 
-Now we have only objects. But we should also take into consideration instances
-where adjectives are involved:
-
-For example: "open the small mailbox with the rusty iron pliers"
-Following the above steps, the tokenized input is:
-
-"small mailbox", "rust iron pliers"
-
-Compare to words in word table, return if any word is unkown.
-
-Find the respective objects in the objectWord table and if more than one object applies to a word
-that has been used by the user, score the objects in question by how many words reference it.
-
-EXCEPTIONS:
-
-Take the example "look under inside the mailbox".
-
-When prepositions are stringed together like this before an object, only the first preposition,
-in this case 'under' is considered as the one we want. Also, there cannot be more than two prepositions
-in a command, so if the player added an extra preposition after 'inside' (for example), the parser would
-return and tell the user they don't understand the command.
+        > weapon
+        ? *fight dog*

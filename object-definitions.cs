@@ -17,6 +17,7 @@ public class Game{
 
             instance = new Game();
             instance.data = new GameData();
+            instance.data.StartGame();
 
         }
         return instance;
@@ -30,8 +31,9 @@ public class Object{
     public int holderID;
     public int[] travelTable;
     public TypeFlags flags;
-    public Action subroutine;
-    public Object(string _name, string _description, int _holderID, TypeFlags _flags, int[] _travelTable, Action _subroutine){
+    public Property[] properties;
+    public Func<bool> subroutine;
+    public Object(string _name, string _description, int _holderID, TypeFlags _flags, int[] _travelTable, Func<bool> _subroutine){
 
         name = _name;
         description = _description;
@@ -41,6 +43,11 @@ public class Object{
         subroutine = _subroutine;
 
     }
+
+}
+public class Property{
+
+
 
 }
 public class WordSynonymPair{
@@ -63,7 +70,7 @@ public class Syntax{
     public TypeFlags directObjectFlags;
     public int preposition2ID;
     public TypeFlags indirectObjectFlags;
-    public Action[] subroutines;
+    public Func<bool> subroutine;
 
     public Syntax(
 
@@ -72,7 +79,7 @@ public class Syntax{
         TypeFlags _directObjectFlags, 
         int _preposition2ID, 
         TypeFlags _indirectObjectFlags, 
-        Action[] _subroutines
+        Func<bool> _subroutine
 
     )
     {
@@ -82,7 +89,7 @@ public class Syntax{
         directObjectFlags = _directObjectFlags;
         preposition2ID = _preposition2ID;
         indirectObjectFlags = _indirectObjectFlags;
-        subroutines = _subroutines;
+        subroutine = _subroutine;
 
     }
 
