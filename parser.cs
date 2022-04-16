@@ -227,6 +227,18 @@ public static class Parser{
                     syntaxID = s;
 
                 }
+                if(
+
+                    syntaxes[s].verbID == verbID &&
+                    syntaxes[s].preposition1ID == preposition1ID &&
+                    syntaxes[s].preposition2ID == preposition2ID
+
+                ){
+
+                    foundSyntax = true;
+                    syntaxID = s;
+
+                }
 
             }
 

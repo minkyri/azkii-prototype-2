@@ -23,6 +23,63 @@ public static class GameF{
         return Console.ReadLine();
 
     }
+    public static string SnakeToPascal(string snakeString){
+
+        if(snakeString.Length == 0)return snakeString;
+
+        char separator = '-';
+        string pascalString = "";
+
+        pascalString += char.ToUpper(snakeString[0]);
+        bool lastWasSeparator = false;
+
+        for(int i = 1; i < snakeString.Length; i++){
+
+            if(lastWasSeparator){
+
+                if(snakeString[i] != separator){
+                    
+                    pascalString += char.ToUpper(snakeString[i]);
+                    lastWasSeparator = false;
+
+                }
+
+            }
+            else{
+
+                if (snakeString[i] == separator)lastWasSeparator = true;
+                else {
+                    
+                    pascalString += snakeString[i];
+
+                }
+
+            }
+
+        }
+
+        return pascalString;
+
+    }
+    public static bool TryCast(object input, Type type, out object result)
+    {
+
+        result = null;
+        try
+        {
+
+            result = Convert.ChangeType(input, type);
+            return true;
+            
+        }
+        catch
+        {
+
+            return false;
+
+        }
+
+    }
     public static int[] GetIndexes(string s, string[] arr){
 
         List<int> indexes = new List<int>{};
@@ -177,6 +234,32 @@ public static class GameF{
 
             GameF.Print("   " + objects[objectWordTable[i,0]].name + " : " + knownWords[objectWordTable[i,1]]);
 
+        }
+
+        GameF.Print("CLASSES");
+        foreach(Object obj in objects){
+
+            GameF.Print("   " + obj.name + ":");
+
+            ObjectClass[] classes = obj.classes;
+            if(classes != null){
+
+                foreach(ObjectClass c in classes){
+
+                    System.Reflection.PropertyInfo[] properties = c.GetType().GetProperties();
+    
+                    GameF.Print("       " + c.GetType().Name + ":");
+
+                    foreach(System.Reflection.PropertyInfo property in properties){
+
+                        GameF.Print("           " + property.Name.ToString() + " : " + property.GetValue(c).ToString());
+
+                    }
+
+                }
+                
+            }
+            
         }
 
     }

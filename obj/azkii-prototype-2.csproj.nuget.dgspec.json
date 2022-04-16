@@ -1,24 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "E:\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {}
+    "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {}
   },
   "projects": {
-    "E:\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {
+    "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
+        "projectUniqueName": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
         "projectName": "azkii-prototype-2",
-        "projectPath": "E:\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
+        "projectPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
         "packagesPath": "C:\\Users\\kyria\\.nuget\\packages\\",
-        "outputPath": "E:\\cs-project\\solutions\\azkii-prototype-2\\obj\\",
+        "outputPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
           "C:\\Users\\kyria\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -58,7 +54,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -18,3 +18,4 @@ look,around,Visible,,,VLookAround
 take,,CanTake,,,VTake
 pick,up,CanTake,,,VTake
 take,all,,,,VTake
+fight,,Actor,with,Weapon,VFight

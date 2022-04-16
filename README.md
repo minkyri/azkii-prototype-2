@@ -1,13 +1,12 @@
 # azkii-prototype-2
 
+TODO:
 
-NOTES & IMPROVEMENTS:
+    array of array "lines" should be made into 2D array.
 
-    Ask user to elaborate if parser unsure of input. For example, if they type "fight", the program should ask the user,
-    "fight what?"
+    the bit flags that the user enters into the spreadsheets need to affect whether the parser prevents the game routines from running.
 
-    Objects can have values that relate to their bit flags. For example, a container needs a capacity value.
+        for example, if there is a sytax that states that the player can "attack [Actor] with [Weapon]", the player should not be allowed to attack if they specify different
+        bit flags to the ones that are stated.
 
-    Users cannot add objects with synonyms or adjectives if the object has no flags.
-
-    Parser must be able to handle input such as "take the leaflet and put it in the mailbox". Notice how the word 'it' is used.
+    parser should ask user to elaborate if their input matches some of the criteria of multiple syntaxes.
