@@ -2,11 +2,9 @@
 
 TODO:
 
-    array of array "lines" should be made into 2D array.
-
-    the bit flags that the user enters into the spreadsheets need to affect whether the parser prevents the game routines from running.
-
-        for example, if there is a sytax that states that the player can "attack [Actor] with [Weapon]", the player should not be allowed to attack if they specify different
-        bit flags to the ones that are stated.
+    csv reader should clean the cell input with the parser's "CleanInput" routine.
+    
+        For example, this will allow users to put spaces after commas in lists.
+        It will also ignore other punctuation that the user may accidentally enter.
 
     parser should ask user to elaborate if their input matches some of the criteria of multiple syntaxes.

@@ -163,7 +163,6 @@ public class Game{
                 int holder = -1;
                 string[] objectAdjectives;
                 string[] objectSynonyms;
-                TypeFlags flags = TypeFlags.None;
                 Func<bool> subroutine;
                 int[] travelTable = new int[10];
 
@@ -213,34 +212,34 @@ public class Game{
 
                 }
 
-                string[] enumStrings = lines[i][16].Split(',');
-                foreach(string enumString in enumStrings){
+                // string[] enumStrings = lines[i][16].Split(',');
+                // foreach(string enumString in enumStrings){
 
-                    if(enumString != ""){
+                //     if(enumString != ""){
                         
-                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+                //         if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
 
-                            flags |= (TypeFlags)result;
+                //             flags |= (TypeFlags)result;
 
-                        }
-                        else{
+                //         }
+                //         else{
 
-                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
-                            LoadGame();
-                            return;
+                //             GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
+                //             LoadGame();
+                //             return;
 
-                        }
+                //         }
 
-                    }
+                //     }
 
-                }
+                // }
                 
-                if(lines[i][17] != ""){
+                if(lines[i][16] != ""){
 
-                    MethodInfo theMethod = dataClassType.GetMethod(lines[i][17]);
+                    MethodInfo theMethod = dataClassType.GetMethod(lines[i][16]);
                     if(theMethod == null){
 
-                        GameF.Print("The subroutine " + lines[i][17] + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
+                        GameF.Print("The subroutine " + lines[i][16] + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
                         LoadGame();
                         return;
 
@@ -261,7 +260,6 @@ public class Game{
                     name,
                     description,
                     holder,
-                    flags,
                     travelTable,
                     subroutine
 
@@ -274,7 +272,6 @@ public class Game{
                 "it",
                 "",
                 0,
-                TypeFlags.None,
                 GameF.isolated,
                 null
 
@@ -303,31 +300,28 @@ public class Game{
 
                 string verb;
                 string preposition1;
-                TypeFlags directObjectFlags = TypeFlags.None;
+                List<Func<int, bool, bool>> directObjectFlags = new List<Func<int, bool, bool>>{};
                 string preposition2;
-                TypeFlags indirectObjectFlags = TypeFlags.None;
+                List<Func<int, bool, bool>> indirectObjectFlags = new List<Func<int, bool, bool>>{};
                 Func<bool> subroutine;
 
                 verb = lines[i][0];
                 preposition1 = lines[i][1];
                 
-                string[] enumStrings = lines[i][2].Split(',');
-                foreach(string enumString in enumStrings){
+                string[] flagStrings = lines[i][2].Split(',');
+                foreach(string flagString in flagStrings){
 
-                    if(enumString != ""){
+                    if(flagString != ""){
                         
-                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+                        MethodInfo flagMethod = dataClassType.GetMethod(flagString);
+                        if(flagMethod == null){
 
-                            directObjectFlags |= (TypeFlags)result;
-
-                        }
-                        else{
-
-                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            GameF.Print("The flag subroutine \"" + flagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
                             LoadGame();
                             return;
 
                         }
+                        directObjectFlags.Add((Func<int, bool, bool>)Delegate.CreateDelegate(typeof(Func<int, bool, bool>), data, flagMethod));
 
                     }
 
@@ -335,53 +329,24 @@ public class Game{
 
                 preposition2 = lines[i][3];
 
-                enumStrings = lines[i][4].Split(',');
-                foreach(string enumString in enumStrings){
+                flagStrings = lines[i][4].Split(',');
+                foreach(string flagString in flagStrings){
 
-                    if(enumString != ""){
+                    if(flagString != ""){
                         
-                        if(Enum.TryParse(typeof(TypeFlags), enumString, true, out object result)){
+                        MethodInfo flagMethod = dataClassType.GetMethod(flagString);
+                        if(flagMethod == null){
 
-                            indirectObjectFlags |= (TypeFlags)result;
-
-                        }
-                        else{
-
-                            GameF.Print("The bit flag " + enumString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            GameF.Print("The flag subroutine \"" + flagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
                             LoadGame();
                             return;
 
                         }
+                        indirectObjectFlags.Add((Func<int, bool, bool>)Delegate.CreateDelegate(typeof(Func<int, bool, bool>), data, flagMethod));
 
                     }
 
                 }
-
-                // string[] actionStrings = lines[i][5].Split(',');
-                // List<Action> actionList = new List<Action>{};
-                // foreach(string actionString in actionStrings){
-
-                //     if(actionString != ""){
-
-                //         MethodInfo theMethod = dataClassType.GetMethod(actionString);
-                //         if(theMethod == null){
-
-                //             GameF.Print("The subroutine " + actionString + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
-                //             LoadGame();
-                //             return;
-
-                //         }
-                //         actionList.Add((Action)Delegate.CreateDelegate(typeof(Action), this, theMethod));
-
-                //     }
-                //     else{
-
-                //         actionList.Add(null);
-
-                //     }
-
-                // }
-                // subroutines = actionList.ToArray();
 
                 string actionString = lines[i][5];               
                 MethodInfo theMethod = dataClassType.GetMethod(actionString);
@@ -397,8 +362,6 @@ public class Game{
                 int verbID = Parser.GetWSPairIndex(verb, data.verbs);
                 int preposition1ID = Parser.GetWSPairIndex(preposition1, data.prepositions);
                 int preposition2ID = Parser.GetWSPairIndex(preposition2, data.prepositions);
-
-                //GameF.Print(verbID.ToString() + " " + preposition1ID.ToString() + " " + preposition2ID.ToString());
 
                 if(verbID == -1 && verb != ""){
 
@@ -421,23 +384,25 @@ public class Game{
                     return;
 
                 }
-                //First note on README.md
 
                 syntaxList.Add(new Syntax(
 
                     verbID,
                     preposition1ID,
-                    directObjectFlags,
+                    directObjectFlags.ToArray(),
                     preposition2ID,
-                    indirectObjectFlags,
+                    indirectObjectFlags.ToArray(),
                     subroutine
 
                 ));
 
+                // GameF.Print(verb + " : " + preposition1 + " : " + preposition2);
+                // GameF.Print("   " + directObjectFlags.Count.ToString());
+                // GameF.Print("   " + indirectObjectFlags.Count.ToString() + "\n");
+
             }
             
             data.syntaxes = syntaxList.ToArray();
-            //GameF.Print(syntaxes.Length.ToString());
 
         #endregion
         #region Read Classes
@@ -634,15 +599,13 @@ public class Object{
     public string description;
     public int holderID;
     public int[] travelTable;
-    public TypeFlags flags;
     public ObjectClass[] classes;
     public Func<bool> subroutine;
-    public Object(string _name, string _description, int _holderID, TypeFlags _flags, int[] _travelTable, Func<bool> _subroutine){
+    public Object(string _name, string _description, int _holderID, int[] _travelTable, Func<bool> _subroutine){
 
         name = _name;
         description = _description;
         holderID = _holderID;
-        flags = _flags;
         travelTable = _travelTable;
         subroutine = _subroutine;
 
@@ -671,18 +634,18 @@ public class Syntax{
 
     public int verbID;
     public int preposition1ID;
-    public TypeFlags directObjectFlags;
+    public Func<int, bool, bool>[] directObjectFlags;
     public int preposition2ID;
-    public TypeFlags indirectObjectFlags;
+    public Func<int, bool, bool>[] indirectObjectFlags;
     public Func<bool> subroutine;
 
     public Syntax(
 
         int _verbID, 
         int _preposition1ID, 
-        TypeFlags _directObjectFlags, 
+        Func<int, bool, bool>[] _directObjectFlags,
         int _preposition2ID, 
-        TypeFlags _indirectObjectFlags, 
+        Func<int, bool, bool>[] _indirectObjectFlags, 
         Func<bool> _subroutine
 
     )

@@ -1,5 +1,5 @@
-,PREPOSITION,D-FLAGS,PREPOSITION,I-FLAGS,SUBROUTINES
-go,,Any,,,VGo
+VERB,PREPOSITION,DIRECT OBJECT FLAGS,PREPOSITION,INDIRECT OBJECT FLAGS,SUBROUTINES
+go,,Direction,,,VGo
 inventory,,,,,VInventory
 north,,,,,VGoNorth
 northeast,,,,,VGoNorthEast
@@ -12,10 +12,10 @@ northwest,,,,,VGoNorthWest
 up,,,,,VGoUp
 down,,,,,VGoDown
 look,,,,,VLook
-look,at,"InRoom, Carried, IsRoom.",,,VLookAt
+look,at,Visible,,,VLookAt
 look,around,,,,VLook
-look,around,"InRoom,IsRoom,Carried",,,VLookAround
-take,,InRoom,,,VTake
-pick,up,InRoom,,,VTake
+look,around,Visible,,,VLookAround
+take,,CanTake,,,VTake
+pick,up,CanTake,,,VTake
 take,all,,,,VTake
-fight,,InRoom,with,Carried,VFight
+fight,,Actor,with,Weapon,VFight

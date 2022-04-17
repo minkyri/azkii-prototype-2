@@ -9,6 +9,7 @@ public static class Parser{
     public static int itObjectPointer = -1;
     public static string directObjectInput = "";
     public static string indirectObjectInput = "";
+    public static string currentInput = "";
     public static void Parse(string input){
 
         string cleanInput = CleanInput(input.ToLower());
@@ -193,83 +194,72 @@ public static class Parser{
             Syntax[] syntaxes = Game.GetInstance().data.syntaxes;
             Object[] objects = Game.GetInstance().data.objects;
 
-            TypeFlags directObjectFlags = TypeFlags.None;
-            TypeFlags indirectObjectFlags = TypeFlags.None;
-
             Func<bool> directObjectAction = null;
             Func<bool> indirectObjectAction = null;
             Func<bool> verbAction = null;
 
             bool foundSyntax = false;
 
-            if(directObjectID != -1){
-                
-                directObjectFlags = objects[directObjectID].flags;           
-
-            }
-            if(indirectObjectID != -1){
-                
-                indirectObjectFlags = objects[indirectObjectID].flags;
-
-            }
-
             for(int s = 0; s < syntaxes.Length && !foundSyntax; s++){
 
+                // string verb = "";
+                // string prep1 = "";
+                // string prep2 = "";
+
+                // if(syntaxes[s].verbID != -1)verb = Game.GetInstance().data.verbs[syntaxes[s].verbID].word;
+                // if(syntaxes[s].preposition1ID != -1)prep1 = Game.GetInstance().data.prepositions[syntaxes[s].preposition1ID].word;
+                // if(syntaxes[s].preposition2ID != -1)prep2 = Game.GetInstance().data.prepositions[syntaxes[s].preposition2ID].word;
+
+                // GameF.Print(
+
+                //     verb + " : " + 
+                //     prep1 + " : " + 
+                //     prep2 + " : " + 
+                //     (!((syntaxes[s].directObjectFlags.Length == 0 && directObjectID != -1) ||
+                //     (syntaxes[s].indirectObjectFlags.Length == 0 && indirectObjectID != -1))).ToString()
+
+                // );
+
+                // GameF.Print(
+
+                //     "     " + (syntaxes[s].directObjectFlags.Length == 0).ToString() + "\n"
+
+                // );
+
                 if(
 
                     syntaxes[s].verbID == verbID &&
                     syntaxes[s].preposition1ID == preposition1ID &&
-                    syntaxes[s].preposition2ID == preposition2ID
+                    syntaxes[s].preposition2ID == preposition2ID &&
+
+                    !((syntaxes[s].directObjectFlags.Length == 0 && directObjectID != -1) ||
+                      (syntaxes[s].indirectObjectFlags.Length == 0 && indirectObjectID != -1))
 
                 ){
 
                     foundSyntax = true;
                     syntaxID = s;
-
+                    
                 }
-                if(
-
-                    syntaxes[s].verbID == verbID &&
-                    syntaxes[s].preposition1ID == preposition1ID &&
-                    syntaxes[s].preposition2ID == preposition2ID
-
-                ){
-
-                    foundSyntax = true;
-                    syntaxID = s;
-
-                }
-
-            }
-
-            // if(directObjectID != -1 && directObjectFlags == TypeFlags.None){
-
-            //     GameF.Print("There is no such object called " + directObjectInput + ".");
-            //     return;
-
-            // }
-            if(directObjectID == -1 && syntaxID != -1 && syntaxes[syntaxID].directObjectFlags != TypeFlags.None){
-
-                GameF.Print("There seems to be a noun missing in that sentence.");
-                return;
-
-            }
-            // if(indirectObjectID != -1 && indirectObjectFlags == TypeFlags.None){
-
-            //     GameF.Print("There is no such object called " + indirectObjectInput + ".");
-            //     return;
-
-            // }
-            if(indirectObjectID == -1 && syntaxID != -1 &&  syntaxes[syntaxID].indirectObjectFlags != TypeFlags.None){
-
-                GameF.Print("There seems to be a noun missing in that sentence.");
-                return;
 
             }
 
             if(!foundSyntax){
 
                 GameF.Print("That sentence isn't one that I recognise.");
+                return;
+
+            }
+
+            currentInput = directObjectInput;
+            if(directObjectID != -1 && !CheckFlags(directObjectID, syntaxes[syntaxID].directObjectFlags)){
+
+                return;
+
+            }
+            currentInput = indirectObjectInput;
+            if(indirectObjectID != -1 && !CheckFlags(indirectObjectID, syntaxes[syntaxID].indirectObjectFlags)){
+
                 return;
 
             }
@@ -507,6 +497,22 @@ public static class Parser{
 
         itObjectPointer = highscoreObject;
         return highscoreObject;
+
+    }
+    public static bool CheckFlags(int objectID, Func<int, bool, bool>[] flags){
+
+        if(flags.Length == 0)return true;
+        List<Func<int, bool, bool>> failedFlags = new List<Func<int, bool, bool>>{};
+
+        foreach(Func<int, bool, bool> flag in flags){
+
+            if(flag(objectID, false))return true;
+            else failedFlags.Add(flag);
+
+        }
+
+        failedFlags[0](objectID, true);
+        return false;
 
     }
     public static bool ExecuteActions(Func<bool> IO, Func<bool> DO, Func<bool> V){

@@ -146,8 +146,10 @@ public static class GameF{
 
                 if (!inQuotes) // If not in quotes, end of current string, add it to result
                 {
+
                     result.Add(currentStr.ToString());
                     currentStr = "";
+
                 }
                 else{
                     currentStr += line[i];
@@ -162,6 +164,7 @@ public static class GameF{
 
         result.Add(currentStr.ToString());
         return result.ToArray(); // Return array of all strings
+
     }
     public static void DisplayGameData(){
 
@@ -303,23 +306,6 @@ public static class GameF{
         return heldIDs.ToArray();
 
     }
-    public static int[] GetHeldObjects(int holderID, TypeFlags flags){
-
-        List<int> heldIDs = new List<int>{};
-        Object[] objects = Game.GetInstance().data.objects;
-        for(int i = 0; i < objects.Length; i++){
-
-            if(objects[i].holderID == holderID && objects[i].flags.HasFlag(flags)){
-
-                heldIDs.Add(i);
-
-            }
-
-        }
-
-        return heldIDs.ToArray();
-
-    }
     public static bool CompareVerb(string verb){
 
         return Parser.GetWSPairIndex(verb, Game.GetInstance().data.verbs) == Parser.verbID;
@@ -333,6 +319,21 @@ public static class GameF{
     public static bool ComparePreposition2(string preposition){
 
         return Parser.GetWSPairIndex(preposition, Game.GetInstance().data.prepositions) == Parser.preposition2ID;
+
+    }
+    public static bool EvaluateFlag(bool condition, bool showMessage, string message){
+
+        if(condition){
+
+            return true;
+
+        }
+        if(showMessage){
+
+            GameF.Print(message);
+
+        }
+        return false;
 
     }
 
