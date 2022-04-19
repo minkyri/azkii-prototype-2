@@ -12,7 +12,7 @@ northwest,,,,,VGoNorthWest
 up,,,,,VGoUp
 down,,,,,VGoDown
 look,,,,,VLook
-look,at,"InRoom, Carried, IsRoom.",,,VLookAt
+look,at,"InRoom,Carried,IsRoom",,,VLookAt
 look,around,,,,VLook
 look,around,"InRoom,IsRoom,Carried",,,VLookAround
 take,,InRoom,,,VTake

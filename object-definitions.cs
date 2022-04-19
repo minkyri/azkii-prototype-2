@@ -1,5 +1,5 @@
-using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
 
 public class Game{
 
@@ -8,7 +8,6 @@ public class Game{
     public GameData data;
 
     private Game(){}
-    
     public static Game GetInstance()
     {
 
@@ -18,18 +17,57 @@ public class Game{
             instance = new Game();
             instance.data = new GameData();
             instance.LoadGame();
-            instance.data.StartGame(); //should remove afterwards?
+            MethodInfo startMethodInfo = instance.data.GetType().GetMethod("StartGame");
+            if(startMethodInfo != null){
+
+                Action startMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, startMethodInfo);
+                startMethod();
+
+            }
 
         }
         return instance;
 
     }
-
     public void LoadGame(){
 
         //string loadFolderLocation = @"F:\school\computer-science\cs-project\solutions\azkii-prototype-2\data-tables\example";
-        string loadFolderLocation = GameF.Input("Enter folder to load game from.");
-        Type dataClassType = this.data.GetType();
+        string[] loadChoice = GameF.Input("Would you like to start a new game, or load a save game?").ToLower().Split(' ');
+        string loadFolderLocation;
+
+        bool start = loadChoice.Contains("n") || loadChoice.Contains("new") || loadChoice.Contains("start") || loadChoice.Contains("begin");
+        bool load = loadChoice.Contains("l") || loadChoice.Contains("load") || loadChoice.Contains("save");
+
+        if((start && load) || (!start && !load)){
+
+            GameF.Print("You did not select a valid option.");
+            LoadGame();
+            return;
+
+        }
+        else if(load){
+
+            loadFolderLocation = GameF.Input("Enter file location of save game.");
+            LoadGameFromXML(loadFolderLocation);
+
+        }
+        else{
+
+            loadFolderLocation = GameF.Input("Enter file location of game template.");
+            LoadGameFromCSV(loadFolderLocation);
+
+        }
+
+    }
+    public void SaveGame(){
+
+        string saveFolderLocation = GameF.Input("Enter file path for save game.");
+        SaveGameToXML(saveFolderLocation);
+
+    }
+    private void LoadGameFromCSV(string loadFolderLocation){
+
+        Type dataClassType = data.GetType();
 
         string[] filesToCheckFor = new string[]{
 
@@ -282,11 +320,20 @@ public class Game{
             data.objects = objectList.ToArray();
             data.knownWords = knownWordsList.ToArray();
             
-            data.objectWordTable = new int[objectWordList.Count,2];
+            // data.objectWordTable = new int[objectWordList.Count,2];
+            // for(int i = 0; i < objectWordList.Count; i++){
+
+            //     data.objectWordTable[i,0] = objectWordList[i][0];
+            //     data.objectWordTable[i,1] = objectWordList[i][1];
+
+            // }
+
+            data.objectWordTable = new int[objectWordList.Count][];
             for(int i = 0; i < objectWordList.Count; i++){
 
-                data.objectWordTable[i,0] = objectWordList[i][0];
-                data.objectWordTable[i,1] = objectWordList[i][1];
+                data.objectWordTable[i] = new int[2];
+                data.objectWordTable[i][0] = objectWordList[i][0];
+                data.objectWordTable[i][1] = objectWordList[i][1];
 
             }
 
@@ -359,9 +406,9 @@ public class Game{
                 }
                 subroutine = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), data, theMethod);
 
-                int verbID = Parser.GetWSPairIndex(verb, data.verbs);
-                int preposition1ID = Parser.GetWSPairIndex(preposition1, data.prepositions);
-                int preposition2ID = Parser.GetWSPairIndex(preposition2, data.prepositions);
+                int verbID = GameF.GetWSPairIndex(verb, data.verbs);
+                int preposition1ID = GameF.GetWSPairIndex(preposition1, data.prepositions);
+                int preposition2ID = GameF.GetWSPairIndex(preposition2, data.prepositions);
 
                 if(verbID == -1 && verb != ""){
 
@@ -424,7 +471,7 @@ public class Game{
                         string classFileName = cutFileName.Substring(2);
                         string className = GameF.SnakeToPascal(classFileName);
 
-                        Type classType = Type.GetType(className);
+                        Type classType = Type.GetType(typeof(GameData).FullName + "+" + className);
                         if(classType == null || !classType.IsSubclassOf(typeof(ObjectClass))){
 
                             GameF.Print("The class \"" + className + "\" specified in " + fileName + " does not exist.");
@@ -591,6 +638,141 @@ public class Game{
         }
 
     }
+    private void LoadGameFromXML(string loadFolderLocation){
+
+        data = GameF.DeserializeObject<GameData>(loadFolderLocation);
+        Type dataClassType = data.GetType();
+
+        foreach(KeyValuePair<int, string> kvp in data.objectSubroutineDictionary){
+
+            MethodInfo theMethod = dataClassType.GetMethod(kvp.Value);
+            if(theMethod == null){
+
+                GameF.Print("The object subroutine \"" + kvp.Value + "\" specified in the loaded game file does not exist.");
+                LoadGame();
+                return;
+
+            }
+            data.objects[kvp.Key].subroutine = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), data, theMethod);
+
+        }
+
+        foreach(KeyValuePair<int, string> kvp in data.syntaxSubroutineDictionary){
+
+            MethodInfo theMethod = dataClassType.GetMethod(kvp.Value);
+            if(theMethod == null){
+
+                GameF.Print("The syntax subroutine \"" + kvp.Value + "\" specified in the loaded game file does not exist.");
+                LoadGame();
+                return;
+
+            }
+            data.syntaxes[kvp.Key].subroutine = (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), data, theMethod);
+
+        }
+
+        foreach(KeyValuePair<int, string[]> kvp in data.syntaxDirectObjectFlagDictionary){
+
+            List<Func<int, bool, bool>> subroutines = new List<Func<int, bool, bool>>{};
+            for(int i = 0; i < kvp.Value.Length; i++){
+
+                MethodInfo theMethod = dataClassType.GetMethod(kvp.Value[i]);
+                    if(theMethod == null){
+
+                    GameF.Print("The direct object flag subroutine \"" + kvp.Value + "\" specified in the loaded game file does not exist.");
+                    LoadGame();
+                    return;
+
+                }
+                subroutines.Add((Func<int, bool, bool>)Delegate.CreateDelegate(typeof(Func<int, bool, bool>), data, theMethod));
+
+            }
+            data.syntaxes[kvp.Key].directObjectFlags = subroutines.ToArray();
+            
+        }
+
+        foreach(KeyValuePair<int, string[]> kvp in data.syntaxIndirectObjectFlagDictionary){
+
+            List<Func<int, bool, bool>> subroutines = new List<Func<int, bool, bool>>{};
+            for(int i = 0; i < kvp.Value.Length; i++){
+
+                MethodInfo theMethod = dataClassType.GetMethod(kvp.Value[i]);
+                    if(theMethod == null){
+
+                    GameF.Print("The indirect object flag subroutine \"" + kvp.Value + "\" specified in the loaded game file does not exist.");
+                    LoadGame();
+                    return;
+
+                }
+                subroutines.Add((Func<int, bool, bool>)Delegate.CreateDelegate(typeof(Func<int, bool, bool>), data, theMethod));
+
+            }
+            data.syntaxes[kvp.Key].indirectObjectFlags = subroutines.ToArray();
+            
+        }
+
+    }
+    private void SaveGameToXML(string saveFolderLocation){
+
+        data.objectSubroutineDictionary = new Dictionary<int, string>{};
+        for(int i = 0; i < data.objects.Length; i++){
+
+            if(data.objects[i].subroutine != null){
+
+                data.objectSubroutineDictionary.Add(i, data.objects[i].subroutine.Method.Name);
+
+            }
+
+        }
+
+        data.syntaxSubroutineDictionary  = new Dictionary<int, string>{};
+        for(int i = 0; i < data.syntaxes.Length; i++){
+
+            if(data.syntaxes[i].subroutine != null){
+
+                data.syntaxSubroutineDictionary.Add(i, data.syntaxes[i].subroutine.Method.Name);
+
+            }
+
+        }
+
+        data.syntaxDirectObjectFlagDictionary  = new Dictionary<int, string[]>{};
+        for(int i = 0; i < data.syntaxes.Length; i++){
+
+            List<string> subroutineNames = new List<string>{};
+            for(int a = 0; a < data.syntaxes[i].directObjectFlags.Length; a++){
+
+                subroutineNames.Add(data.syntaxes[i].directObjectFlags[a].Method.Name);
+
+            }
+            data.syntaxDirectObjectFlagDictionary.Add(i, subroutineNames.ToArray());
+
+        }
+
+        data.syntaxIndirectObjectFlagDictionary  = new Dictionary<int, string[]>{};
+        for(int i = 0; i < data.syntaxes.Length; i++){
+
+            List<string> subroutineNames = new List<string>{};
+            for(int a = 0; a < data.syntaxes[i].indirectObjectFlags.Length; a++){
+
+                subroutineNames.Add(data.syntaxes[i].indirectObjectFlags[a].Method.Name);
+
+            }
+            data.syntaxIndirectObjectFlagDictionary.Add(i, subroutineNames.ToArray());
+
+        }
+
+        GameF.SerializeObject<GameData>(data, saveFolderLocation);
+
+        MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
+        if(returnMethodInfo != null){
+
+            Action returnMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, returnMethodInfo);
+            returnMethod();
+
+        }
+
+    }
 
 }
 public class Object{
@@ -600,7 +782,7 @@ public class Object{
     public int holderID;
     public int[] travelTable;
     public ObjectClass[] classes;
-    public Func<bool> subroutine;
+    [IgnoreDataMember] public Func<bool> subroutine;
     public Object(string _name, string _description, int _holderID, int[] _travelTable, Func<bool> _subroutine){
 
         name = _name;
@@ -610,6 +792,7 @@ public class Object{
         subroutine = _subroutine;
 
     }
+    public Object(){}
 
 }
 public class ObjectClass{
@@ -628,16 +811,17 @@ public class WordSynonymPair{
         synonym = _synonym;
 
     }
+    public WordSynonymPair(){}
 
 }
 public class Syntax{
 
     public int verbID;
     public int preposition1ID;
-    public Func<int, bool, bool>[] directObjectFlags;
+    [IgnoreDataMember] public Func<int, bool, bool>[] directObjectFlags;
     public int preposition2ID;
-    public Func<int, bool, bool>[] indirectObjectFlags;
-    public Func<bool> subroutine;
+    [IgnoreDataMember] public Func<int, bool, bool>[] indirectObjectFlags;
+    [IgnoreDataMember] public Func<bool> subroutine;
 
     public Syntax(
 
@@ -659,5 +843,7 @@ public class Syntax{
         subroutine = _subroutine;
 
     }
+
+    public Syntax(){}
 
 }

@@ -1,24 +1,39 @@
+using System.Runtime.Serialization;
+
+[DataContract]
 public class GameData{
 
     #region DO NOT CHANGE
 
-    public string[] articles;
-    public string[] conjunctions;
-    public WordSynonymPair[] prepositions;
-    public WordSynonymPair[] verbs;
-    public string[] knownWords;
-    public Object[] objects;
-    public int[,] objectWordTable;
-    public Syntax[] syntaxes;
+    [DataMember] public string[] articles;
+    [DataMember] public string[] conjunctions;
+    [DataMember] public WordSynonymPair[] prepositions;
+    [DataMember] public WordSynonymPair[] verbs;
+    [DataMember] public string[] knownWords;
+    [DataMember] public Object[] objects;
+    [DataMember] public int[][] objectWordTable;
+    [DataMember] public Syntax[] syntaxes;
 
-    public GameData(){
+    [DataMember] public Dictionary<int, string> objectSubroutineDictionary;
+    [DataMember] public Dictionary<int, string> syntaxSubroutineDictionary;
+    [DataMember] public Dictionary<int, string[]> syntaxDirectObjectFlagDictionary;
+    [DataMember] public Dictionary<int, string[]> syntaxIndirectObjectFlagDictionary;
 
-
-
-    }
+    public GameData(){}
 
     #endregion
 
+    #region Custom Variables
+
+        [DataMember] string player = "me";
+        [DataMember] string[] stupid = new string[]{
+
+            "What a concept!",
+            "You can't be serious."
+
+        };
+
+    #endregion
     #region Verb Subroutines
 
         #region Directions
@@ -130,8 +145,7 @@ public class GameData{
         #endregion
         public bool VInventory(){
 
-            int playerID = GameF.SearchForObject(player);
-            int[] heldObjects = GameF.GetHeldObjects(playerID);
+            int[] heldObjects = GameF.GetHeldObjects(player);
             if(heldObjects.Length == 0){
 
                 GameF.Print("You are empty handed.");
@@ -143,7 +157,7 @@ public class GameData{
                 GameF.Print("You are holding:");
                 foreach(int i in heldObjects){
 
-                    objects[i].holderID = playerID;
+                    objects[i].holderID = GameF.SearchForObject(player);
                     GameF.Print("   A " + objects[i].description  + ".");
 
                 }
@@ -164,7 +178,7 @@ public class GameData{
             GameF.Print(description);
             if(objects[currentLocation].subroutine != null){
 
-                Parser.verbID = Parser.GetWSPairIndex("look", verbs);
+                Parser.verbID = GameF.GetWSPairIndex("look", verbs);
                 objects[currentLocation].subroutine();
 
             }
@@ -263,10 +277,33 @@ public class GameData{
 
         }
 
+    #endregion 
+    #region Object Classes
+
+        public class Container : ObjectClass{
+
+            public int capacity {get; set;}
+            public int[] held {get; set;}
+
+        }
+
+         public class Weapon : ObjectClass{
+
+            public float damage {get; set;}
+
+        }
+
     #endregion
     #region Other
         
+        //Move to game functions!
+
         public void StartGame(){
+
+            VLook();
+
+        }
+        public void ReturnToGame(){
 
             VLook();
 
@@ -295,33 +332,7 @@ public class GameData{
         } 
 
     #endregion
-    #region Macros
-
-        string player = "me";
-        string[] stupid = new string[]{
-
-            "What a concept!",
-            "You can't be serious."
-
-        };
-
-    #endregion
 
 }
 
-#region Object Classes
 
-    public class Container : ObjectClass{
-
-        public int capacity {get; set;}
-        public int[] held {get; set;}
-
-    }
-
-    public class Weapon : ObjectClass{
-
-        public float damage {get; set;}
-
-    }
-
-#endregion

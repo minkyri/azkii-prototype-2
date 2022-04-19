@@ -18,6 +18,8 @@ public static class Parser{
         for(int i = 0; i < commands.Length; i++){
 
             string[] command = commands[i].Split(' ');
+            if(CheckForSpecialActions(commands[i]))return;
+
             verbID = -1;
             preposition1ID = -1;
             directObjectID = -1;
@@ -25,13 +27,13 @@ public static class Parser{
             indirectObjectID = -1;
             syntaxID = -1;
 
-            verbID = GetWSPairIndex(command[0], Game.GetInstance().data.verbs);
+            verbID = GameF.GetWSPairIndex(command[0], Game.GetInstance().data.verbs);
 
             if(verbID == -1){
 
                 if(
                     
-                    GetWSPairIndex(command[0], Game.GetInstance().data.prepositions) != -1 ||
+                    GameF.GetWSPairIndex(command[0], Game.GetInstance().data.prepositions) != -1 ||
                     Game.GetInstance().data.knownWords.Contains(command[0])
                 
                 ){
@@ -55,7 +57,7 @@ public static class Parser{
 
             for(int a = 1; a < command.Length; a++){
 
-                int tempPrepositionID = GetWSPairIndex(command[a], Game.GetInstance().data.prepositions);
+                int tempPrepositionID = GameF.GetWSPairIndex(command[a], Game.GetInstance().data.prepositions);
                 if(tempPrepositionID != -1){
 
                     if(preposition1ID == -1 && !foundAnObject){
@@ -93,7 +95,7 @@ public static class Parser{
                     }   
 
                 }
-                else if(GetWSPairIndex(command[a], Game.GetInstance().data.verbs) != -1){
+                else if(GameF.GetWSPairIndex(command[a], Game.GetInstance().data.verbs) != -1){
 
                     GameF.Print("You've used too many verbs!");
                     return;
@@ -319,7 +321,7 @@ public static class Parser{
 
         //foreach(string s in cleanSplitInput)GameF.Print(s + "   len: " + s.Length.ToString());
 
-        return ArrayToSentenceString(cleanSplitInput.ToArray());
+        return GameF.ArrayToSentence(cleanSplitInput.ToArray());
 
     }
     private static string[] SplitActions(string input){
@@ -348,71 +350,11 @@ public static class Parser{
         string[] returnArray = new string[commands.Count];
         for(int i = 0; i < returnArray.Length; i++){
 
-            returnArray[i] = ArrayToSentenceString(commands[i].ToArray());
+            returnArray[i] = GameF.ArrayToSentence(commands[i].ToArray());
 
         }
 
         return returnArray;
-
-    }
-    private static string ArrayToSentenceString(string[] array){
-
-        string returnString = "";
-
-        if(array.Length == 0)return returnString;
-
-        for(int i = 0; i < array.Length-1; i++)returnString += array[i] + " ";
-        returnString += array[array.Length-1];
-        return returnString;
-
-    }
-    public static int GetWSPairIndex(string word, WordSynonymPair[] WSArr){
-
-        for(int i = 0; i < WSArr.Length; i++){
-
-            if(WSArr[i].word == word){
-
-                return WSArr[i].synonym;
-
-            }
-
-        }
-
-        return -1;
-
-    }
-    public static int[] WordToObjectIndexes(string word){
-        
-        if(itObjectPointer != -1 && word == "it"){
-
-            return new int[]{itObjectPointer};
-
-        }
-
-        int[,] objectWordTable = Game.GetInstance().data.objectWordTable;
-        List<int> objectIndexes = new List<int>{};
-
-        for(int i = 0; i < objectWordTable.Length/objectWordTable.Rank; i++){
-
-            foreach(int index in GameF.GetIndexes(word, Game.GetInstance().data.knownWords)){
-
-                if(index == objectWordTable[i,1]){
-
-                    objectIndexes.Add(objectWordTable[i,0]);
-
-                }
-
-            }
-
-        }
-
-        // for(int i = 0; i < objectIndexes.Count; i++){
-
-        //     GameF.Print(Game.GetInstance().data.objects[objectIndexes[i]].description);
-
-        // }
-
-        return objectIndexes.ToArray();
 
     }
     public static int ScoreObjects(string objectPhrase){
@@ -430,8 +372,7 @@ public static class Parser{
 
             }
 
-            //GameF.Print(splitPhrase[b] + "  len: " + splitPhrase[b].Length);
-            int[] objectIndexes = WordToObjectIndexes(splitPhrase[b]);
+            int[] objectIndexes = GameF.GetObjectIndexes(splitPhrase[b]);
             
             if(objectIndexes.Length == 1 && splitPhrase.Length > 1){
 
@@ -443,13 +384,6 @@ public static class Parser{
                 }
 
             }
-
-            // GameF.Print(splitPhrase[b].ToUpper() + ": ");
-            // foreach(int i in objectIndexes){
-
-            //     GameF.Print(i.ToString());
-
-            // }
 
             for(int c = 0; c < objectIndexes.Length; c++){
 
@@ -533,6 +467,22 @@ public static class Parser{
 
         }
         return false;
+
+    }
+    public static bool CheckForSpecialActions(string input){
+
+        switch(input){
+
+            case "save":
+
+                Game.GetInstance().SaveGame();
+                return true;
+
+            default:
+
+                return false;
+
+        }
 
     }
 
