@@ -2,7 +2,7 @@
 
 TODO:
 
-    add save game function
+    remove travelTable from Object class, so that it not a requirement in the objects.csv file. Instead, users can add a "Location" or "Room" class which will be more versatile.
 
     impliment better algorithms for searching and sorting through game data
 

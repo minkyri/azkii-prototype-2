@@ -47,7 +47,8 @@ public class Game{
         }
         else if(load){
 
-            loadFolderLocation = GameF.Input("Enter file location of save game.");
+            string fileName = GameF.Input("Enter name of save game file.");
+            loadFolderLocation = Directory.GetCurrentDirectory() + @"\saves\" + fileName + ".xml";
             LoadGameFromXML(loadFolderLocation);
 
         }
@@ -61,7 +62,8 @@ public class Game{
     }
     public void SaveGame(){
 
-        string saveFolderLocation = GameF.Input("Enter file path for save game.");
+        string fileName = GameF.Input("Enter name for save game.");
+        string saveFolderLocation = Directory.GetCurrentDirectory() + @"\saves\" + fileName + ".xml";
         SaveGameToXML(saveFolderLocation);
 
     }
