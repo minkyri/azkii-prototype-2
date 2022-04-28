@@ -1,14 +1,11 @@
 using System.Runtime.Serialization;
 using System.Xml;
+using System.Text;
 
 public static class GameF{
 
-    #region Macros
-
-        public static int[] isolated = new int[]{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
-
-    #endregion
     #region General Utilities
+        public static Random random = new Random();
         public static void Print(string display){
 
             Console.WriteLine(display);
@@ -26,6 +23,130 @@ public static class GameF{
             Console.Write("\n>  ");
             return Console.ReadLine();
 
+        }
+        public static int BinarySearch(int find, int[] array){
+
+            return RecursiveBinarySearch(find, array, 0, array.Length-1);
+
+        }
+        private static int RecursiveBinarySearch(int find, int[] array, int min, int max)  
+        {  
+
+            if (min > max)  
+            {  
+
+                return -1;  
+
+            }  
+            else  
+            {  
+
+                int middle = (min+max)/2;  
+                if (find == array [middle])  
+                {  
+
+                    return middle + 1;  
+
+                }  
+                else if (find < array [middle])  
+                {  
+
+                    return RecursiveBinarySearch(find, array, min, middle - 1);  
+
+                }  
+                else  
+                {  
+
+                    return RecursiveBinarySearch(find, array, middle + 1, max);  
+
+                }  
+
+            }  
+
+        }
+        public static int[] MergeSort(int[] array)
+        {
+            int[] left;
+            int[] right;
+            int[] result = new int[array.Length];  
+            //As this is a recursive algorithm, we need to have a base case to 
+            //avoid an infinite recursion and therfore a stackoverflow
+            if (array.Length <= 1)
+                return array;              
+            // The exact midpoint of our array  
+            int midPoint = array.Length / 2;  
+            //Will represent our 'left' array
+            left = new int[midPoint];
+  
+            //if array has an even number of elements, the left and right array will have the same number of 
+            //elements
+            if (array.Length % 2 == 0)
+                right = new int[midPoint];  
+            //if array has an odd number of elements, the right array will have one more element than left
+            else
+                right = new int[midPoint + 1];  
+            //populate left array
+            for (int i = 0; i < midPoint; i++)
+                left[i] = array[i];  
+            //populate right array   
+            int x = 0;
+            //We start our index from the midpoint, as we have already populated the left array from 0 to midpont
+            for (int i = midPoint; i < array.Length; i++)
+            {
+                right[x] = array[i];
+                x++;
+            }  
+            //Recursively sort the left array
+            left = MergeSort(left);
+            //Recursively sort the right array
+            right = MergeSort(right);
+            //Merge our two sorted arrays
+            result = Merge(left, right);  
+            return result;
+        }
+        private static int[] Merge(int[] left, int[] right)
+        {
+            int resultLength = right.Length + left.Length;
+            int[] result = new int[resultLength];
+            //
+            int indexLeft = 0, indexRight = 0, indexResult = 0;  
+            //while either array still has an element
+            while (indexLeft < left.Length || indexRight < right.Length)
+            {
+                //if both arrays have elements  
+                if (indexLeft < left.Length && indexRight < right.Length)  
+                {  
+                    //If item on left array is less than item on right array, add that item to the result array 
+                    if (left[indexLeft] <= right[indexRight])
+                    {
+                        result[indexResult] = left[indexLeft];
+                        indexLeft++;
+                        indexResult++;
+                    }
+                    // else the item in the right array wll be added to the results array
+                    else
+                    {
+                        result[indexResult] = right[indexRight];
+                        indexRight++;
+                        indexResult++;
+                    }
+                }
+                //if only the left array still has elements, add all its items to the results array
+                else if (indexLeft < left.Length)
+                {
+                    result[indexResult] = left[indexLeft];
+                    indexLeft++;
+                    indexResult++;
+                }
+                //if only the right array still has elements, add all its items to the results array
+                else if (indexRight < right.Length)
+                {
+                    result[indexResult] = right[indexRight];
+                    indexRight++;
+                    indexResult++;
+                }  
+            }
+            return result;
         }
         public static string SnakeToPascal(string snakeString){
 
@@ -98,6 +219,26 @@ public static class GameF{
             return new int[]{-1};
 
         }
+        public static int[] StringsToUnicodeInts(string[] array){
+
+            List<byte[]> asciiValues = new List<byte[]>{};
+            List<int> intValues = new List<int>{};
+
+            for(int i = 0; i < array.Length; i++){
+
+                asciiValues.Add(Encoding.Unicode.GetBytes(array[i]));
+
+            }
+
+            foreach(byte[] bytes in asciiValues){
+
+                intValues.Add(BitConverter.ToInt32(bytes));
+
+            }
+
+            return intValues.ToArray();
+
+        }
         public static string ArrayToSentence(string[] array){
 
             string returnString = "";
@@ -109,6 +250,11 @@ public static class GameF{
             return returnString;
 
         } 
+        public static bool Chance(int percent){
+
+            return random.Next(0, 100) < percent;
+
+        }
 
     #endregion
     #region File Reading/Writing
@@ -315,18 +461,33 @@ public static class GameF{
         }
         public static int SearchForObject(string name){
 
-            Object[] objects = Game.GetInstance().data.objects;
-            for(int i = 0; i < objects.Length; i++){
+            // Object[] objects = Game.GetInstance().data.objects;
+            
+            // for(int i = 0; i < objects.Length; i++){
 
-                if(objects[i].name == name){
+            //     if(objects[i].name == name){
 
-                    return i;
+            //         return i;
 
-                }
+            //     }
 
-            }
+            // }
 
-            return -1;
+            return Parser.ScoreObjects(name);
+
+            // Object[] objects = Game.GetInstance().data.objects;
+            // List<string> objectNames = new List<string>{};
+            // for(int i = 0; i < objects.Length; i++){
+
+            //     objectNames.Add(objects[i].name);
+
+            // }
+
+            // int find = StringsToUnicodeInts(new string[1]{name})[0];
+            // int index = BinarySearch(find, StringsToUnicodeInts(objectNames.ToArray()));
+
+            // GameF.Print(objectNames[index]);
+            // return index;
 
         }
         public static int GetObjectHolder(string name){
@@ -336,9 +497,9 @@ public static class GameF{
             return Game.GetInstance().data.objects[obj].holderID;
 
         }
-        public static int[] GetHeldObjects(string holder){
+        public static int[] GetHeldObjects(int holderID){
 
-            int holderID = SearchForObject(holder);
+            if(holderID == -1)return new int[]{};
 
             List<int> heldIDs = new List<int>{};
             Object[] objects = Game.GetInstance().data.objects;
@@ -419,6 +580,16 @@ public static class GameF{
             return GetWSPairIndex(preposition, Game.GetInstance().data.prepositions) == Parser.preposition2ID;
 
         }
+        public static void MoveObject(int objectID, int toID){
+
+            Object[] objects = Game.GetInstance().data.objects;
+            if(objects.Length > objectID && objects.Length > toID){
+
+                objects[objectID].holderID = toID;
+
+            }
+
+        }
         public static bool EvaluateFlag(bool condition, bool showMessage, string message){
 
             if(condition){
@@ -432,6 +603,69 @@ public static class GameF{
 
             }
             return false;
+
+        }
+        public static bool TryGetObjectClass<T>(int objectID, out T objectClass){
+
+            Type classType = typeof(T);
+            objectClass = default(T);
+
+            Object obj = Game.GetInstance().data.objects[objectID];
+
+            if(objectID == -1 || obj == null || obj.classes == null){
+
+                return false;
+                
+            }
+
+            foreach(ObjectClass c in obj.classes){
+
+                if(c.GetType() == classType){
+
+                    if(TryCast(c, classType, out object cast)){
+
+                        objectClass = (T)cast;
+                        return true;
+
+                    }
+
+                }
+
+            }
+
+            return false;
+
+        }
+        public static Dictionary<int, int> GetObjectHierarchy(int objectID){
+
+            return GetObjectHierarchyRecursive(objectID, 0);
+
+        }
+        public static Dictionary<int, int> GetObjectHierarchyRecursive(int objectID, int indents){
+
+            Dictionary<int, int> hierarchyDictionary = new Dictionary<int, int>{};
+            
+            if(indents != 0){
+
+                hierarchyDictionary.Add(objectID, indents);
+
+            }
+
+            int[] held = GameF.GetHeldObjects(objectID);
+            
+            foreach(int heldID in held)
+            {
+
+                Dictionary<int, int> addition = GetObjectHierarchyRecursive(heldID, indents + 1);
+                foreach(KeyValuePair<int, int> kvp in addition){
+
+                    hierarchyDictionary.Add(kvp.Key, kvp.Value);
+
+                }
+
+            }
+
+            return hierarchyDictionary;
 
         }
 

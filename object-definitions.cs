@@ -17,16 +17,40 @@ public class Game{
             instance = new Game();
             instance.data = new GameData();
             instance.LoadGame();
-            MethodInfo startMethodInfo = instance.data.GetType().GetMethod("StartGame");
-            if(startMethodInfo != null){
-
-                Action startMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, startMethodInfo);
-                startMethod();
-
-            }
 
         }
         return instance;
+
+    }
+    public bool CheckForSpecialActions(string input){
+
+        switch(input){
+
+            case "save":
+
+                SaveGame();
+                return true;
+
+            case "restart":
+
+                ResartGame();
+                return true;
+
+            case "exit":
+
+                ExitGame();
+                return true;
+
+            case "load":
+
+                LoadGame();
+                return true;
+
+            default:
+
+                return false;
+
+        }
 
     }
     public void LoadGame(){
@@ -51,11 +75,27 @@ public class Game{
             loadFolderLocation = Directory.GetCurrentDirectory() + @"\saves\" + fileName + ".xml";
             LoadGameFromXML(loadFolderLocation);
 
+            MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
+            if(returnMethodInfo != null){
+
+                Action returnMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, returnMethodInfo);
+                returnMethod();
+
+            }
+
         }
         else{
 
-            loadFolderLocation = GameF.Input("Enter file location of game template.");
+            loadFolderLocation = @"F:\school\computer-science\cs-project\games\e-w-l\data-tables";//GameF.Input("Enter file location of game template.");
             LoadGameFromCSV(loadFolderLocation);
+            
+            MethodInfo startMethodInfo = instance.data.GetType().GetMethod("StartGame");
+            if(startMethodInfo != null){
+
+                Action startMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, startMethodInfo);
+                startMethod();
+
+            }
 
         }
 
@@ -63,8 +103,93 @@ public class Game{
     public void SaveGame(){
 
         string fileName = GameF.Input("Enter name for save game.");
-        string saveFolderLocation = Directory.GetCurrentDirectory() + @"\saves\" + fileName + ".xml";
-        SaveGameToXML(saveFolderLocation);
+
+        try{
+
+            string saveFolderLocation = Directory.GetCurrentDirectory() + @"\saves\" + fileName + ".xml";
+            SaveGameToXML(saveFolderLocation);
+
+        }
+        catch(Exception){
+
+            GameF.Print("There was an error saving.");
+            SaveGame();
+
+        }
+
+        MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
+        if(returnMethodInfo != null){
+
+            Action returnMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, returnMethodInfo);
+            returnMethod();
+
+        }
+
+    }
+    public void ResartGame(){
+
+        string[] loadChoice = GameF.Input("Would you like to restart?").ToLower().Split(' ');
+
+        bool yes = loadChoice.Contains("y") || loadChoice.Contains("yes") || loadChoice.Contains("again");
+        bool no = loadChoice.Contains("n") || loadChoice.Contains("no") || loadChoice.Contains("stop");
+
+        if((yes && no) || (!yes && !no)){
+
+            GameF.Print("You did not select a valid option.");
+            ResartGame();
+            return;
+
+        }
+        else if(no){
+
+            return;
+
+        }
+        else{
+
+            instance = null;
+            GetInstance();
+
+        }
+
+    }
+    public void ExitGame(){
+
+        string[] loadChoice = GameF.Input("Are you sure you want to exit?").ToLower().Split(' ');
+
+        bool yes = loadChoice.Contains("y") || loadChoice.Contains("yes") || loadChoice.Contains("again");
+        bool no = loadChoice.Contains("n") || loadChoice.Contains("no") || loadChoice.Contains("stop");
+
+        if((yes && no) || (!yes && !no)){
+
+            GameF.Print("You did not select a valid option.");
+            ExitGame();
+            return;
+
+        }
+        else if(no){
+
+            MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
+            if(returnMethodInfo != null){
+
+                Action returnMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, returnMethodInfo);
+                returnMethod();
+
+            }
+            return;
+
+        }
+        else{
+
+            System.Environment.Exit(0);
+
+        }
+
+    }
+    public void FinishGame(){
+
+        ResartGame();
+        ExitGame();
 
     }
     private void LoadGameFromCSV(string loadFolderLocation){
@@ -95,7 +220,7 @@ public class Game{
             }
             else if(GameF.IsFileLocked(new FileInfo(filePath))){
 
-                GameF.Print(fileName + fileType + " is open, please close it before importing a game.");
+                GameF.Print(fileName + fileType + " is open, please close it before importing a game.\n");
                 LoadGame();
                 return;
 
@@ -111,7 +236,8 @@ public class Game{
             List<string> articleList = new List<string>{};
             for(int i = 1; i < lines.Length; i++){
 
-                articleList.Add(lines[i][0]);
+                string article = Parser.CleanInput(lines[i][0]);
+                articleList.Add(article);
 
             }
             data.articles = articleList.ToArray();
@@ -123,7 +249,8 @@ public class Game{
             List<string> conjunctionList = new List<string>{};
             for(int i = 1; i < lines.Length; i++){
 
-                conjunctionList.Add(lines[i][0]);
+                string conjunction = Parser.CleanInput(lines[i][0]);
+                conjunctionList.Add(conjunction);
 
             }
             data.conjunctions = conjunctionList.ToArray();
@@ -138,7 +265,7 @@ public class Game{
             for(int i = 1; i < lines.Length; i++){
 
                 int currentPrepositionIndex = prepositionIndexCounter;
-                prepositionList.Add(new WordSynonymPair(lines[i][0], currentPrepositionIndex));
+                prepositionList.Add(new WordSynonymPair(Parser.CleanInput(lines[i][0]), currentPrepositionIndex));
                 prepositionIndexCounter ++;
 
                 if(lines[i].Length > 1 && lines[i][1] != ""){
@@ -147,7 +274,8 @@ public class Game{
 
                     for(int b = 0; b < synonyms.Length; b++){
 
-                        prepositionList.Add(new WordSynonymPair(synonyms[b], currentPrepositionIndex));
+                        string synonym = Parser.CleanInput(synonyms[b]);
+                        prepositionList.Add(new WordSynonymPair(synonym, currentPrepositionIndex));
                         prepositionIndexCounter ++;
 
                     }
@@ -171,12 +299,13 @@ public class Game{
                     string[] synonyms = lines[i][1].Split(',');
 
                     int currentVerbIndex = verbIndexCounter;
-                    verbList.Add(new WordSynonymPair(lines[i][0], currentVerbIndex));
+                    verbList.Add(new WordSynonymPair(Parser.CleanInput(lines[i][0]), currentVerbIndex));
                     verbIndexCounter ++;
 
                     for(int b = 0; b < synonyms.Length; b++){
 
-                        verbList.Add(new WordSynonymPair(synonyms[b], currentVerbIndex));
+                        string synonym = Parser.CleanInput(synonyms[b]);
+                        verbList.Add(new WordSynonymPair(synonym, currentVerbIndex));
                         verbIndexCounter ++;
 
                     }
@@ -204,18 +333,28 @@ public class Game{
                 string[] objectAdjectives;
                 string[] objectSynonyms;
                 Func<bool> subroutine;
-                int[] travelTable = new int[10];
 
-                name = lines[i][1];
+                name = lines[i][3].Split(',')[0];
                 description = lines[i][2];
-                int.TryParse(lines[i][3], out holder);
+                
+                if(lines[i][1] == ""){
+
+                    holder = -1;
+
+                }
+                else{
+
+                    int.TryParse(lines[i][1], out holder);
+
+                }
+
                 //el mong us
                 objectAdjectives = lines[i][4].Split(',');
-                objectSynonyms = lines[i][5].Split(',');
-                
+                objectSynonyms = lines[i][3].Split(',').Skip(1).ToArray();
+
                 if(name != ""){
 
-                    knownWordsList.Add(name);
+                    knownWordsList.Add(Parser.CleanInput(name));
                     objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
                     knownWordsIndexCounter++;
 
@@ -225,7 +364,7 @@ public class Game{
 
                     if(adjective != ""){
                         
-                        knownWordsList.Add(adjective);
+                        knownWordsList.Add(Parser.CleanInput(adjective));
                         objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
                         knownWordsIndexCounter++;
 
@@ -236,7 +375,7 @@ public class Game{
 
                     if(synonym != ""){
                         
-                        knownWordsList.Add(synonym);
+                        knownWordsList.Add(Parser.CleanInput(synonym));
                         objectWordList.Add(new int[2]{i-1, knownWordsIndexCounter});
                         knownWordsIndexCounter++;
 
@@ -244,13 +383,13 @@ public class Game{
 
                 }
 
-                for(int a = 0; a < travelTable.Length; a++){
+                // for(int a = 0; a < travelTable.Length; a++){
 
-                    string travel = lines[i][6 + a];
-                    if(travel == "") travelTable[a] = -1;
-                    else travelTable[a] = int.Parse(travel);
+                //     string travel = lines[i][6 + a];
+                //     if(travel == "") travelTable[a] = -1;
+                //     else travelTable[a] = int.Parse(travel);
 
-                }
+                // }
 
                 // string[] enumStrings = lines[i][16].Split(',');
                 // foreach(string enumString in enumStrings){
@@ -274,12 +413,13 @@ public class Game{
 
                 // }
                 
-                if(lines[i][16] != ""){
+                if(lines[i][5] != ""){
 
-                    MethodInfo theMethod = dataClassType.GetMethod(lines[i][16]);
+                    string methodName = Parser.CleanInput(lines[i][5]);
+                    MethodInfo theMethod = dataClassType.GetMethod(methodName);
                     if(theMethod == null){
 
-                        GameF.Print("The subroutine " + lines[i][16] + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
+                        GameF.Print("The subroutine " + methodName + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " does not exist.");
                         LoadGame();
                         return;
 
@@ -300,7 +440,6 @@ public class Game{
                     name,
                     description,
                     holder,
-                    travelTable,
                     subroutine
 
                 ));
@@ -312,7 +451,6 @@ public class Game{
                 "it",
                 "",
                 0,
-                GameF.isolated,
                 null
 
             ));
@@ -354,18 +492,20 @@ public class Game{
                 List<Func<int, bool, bool>> indirectObjectFlags = new List<Func<int, bool, bool>>{};
                 Func<bool> subroutine;
 
-                verb = lines[i][0];
-                preposition1 = lines[i][1];
+                verb = Parser.CleanInput(lines[i][0]);
+                preposition1 = Parser.CleanInput(lines[i][1]);;
                 
                 string[] flagStrings = lines[i][2].Split(',');
                 foreach(string flagString in flagStrings){
 
+                    string cleanFlagString = Parser.CleanInput(flagString);
+
                     if(flagString != ""){
                         
-                        MethodInfo flagMethod = dataClassType.GetMethod(flagString);
+                        MethodInfo flagMethod = dataClassType.GetMethod(cleanFlagString);
                         if(flagMethod == null){
 
-                            GameF.Print("The flag subroutine \"" + flagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            GameF.Print("The flag subroutine \"" + cleanFlagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
                             LoadGame();
                             return;
 
@@ -376,17 +516,19 @@ public class Game{
 
                 }
 
-                preposition2 = lines[i][3];
+                preposition2 = Parser.CleanInput(lines[i][3]);
 
                 flagStrings = lines[i][4].Split(',');
                 foreach(string flagString in flagStrings){
 
+                    string cleanFlagString = Parser.CleanInput(flagString);
+
                     if(flagString != ""){
                         
-                        MethodInfo flagMethod = dataClassType.GetMethod(flagString);
+                        MethodInfo flagMethod = dataClassType.GetMethod(cleanFlagString);
                         if(flagMethod == null){
 
-                            GameF.Print("The flag subroutine \"" + flagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                            GameF.Print("The flag subroutine \"" + cleanFlagString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
                             LoadGame();
                             return;
 
@@ -397,11 +539,11 @@ public class Game{
 
                 }
 
-                string actionString = lines[i][5];               
+                string actionString = Parser.CleanInput(lines[i][5]);               
                 MethodInfo theMethod = dataClassType.GetMethod(actionString);
                 if(theMethod == null){
 
-                    GameF.Print("The subroutine " + lines[i][5] + " specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
+                    GameF.Print("The subroutine \"" + actionString + "\" specified on line " + (i+1).ToString() + " of " + loadFolderLocation + "/syntax" + fileType + " does not exist.");
                     LoadGame();
                     return;
 
@@ -456,9 +598,6 @@ public class Game{
         #endregion
         #region Read Classes
 
-            //check string after the '_p', and try to match it to an existing property class.
-            //add an instance of this class with the specified values to the corresponding objects.
-
             string[] files = Directory.GetFiles(loadFolderLocation);
             Dictionary<int, List<ObjectClass>> objectClasses = new Dictionary<int, List<ObjectClass>>{};
 
@@ -471,8 +610,7 @@ public class Game{
                     if(cutFileName.Substring(0, 2) == "c_" && Path.GetExtension(file) == ".csv"){
 
                         string classFileName = cutFileName.Substring(2);
-                        string className = GameF.SnakeToPascal(classFileName);
-
+                        string className = Parser.CleanInput(GameF.SnakeToPascal(classFileName)); 
                         Type classType = Type.GetType(typeof(GameData).FullName + "+" + className);
                         if(classType == null || !classType.IsSubclassOf(typeof(ObjectClass))){
 
@@ -502,11 +640,12 @@ public class Game{
                         lines = GameF.ReadCSV(file);
 
                         for(int i = 1; i < lines.Length; i++){
-
+                            
+                            string input = Parser.CleanInput(lines[i][0]);
                             object objectClass = Activator.CreateInstance(classType);
-                            if(!int.TryParse(lines[i][0], out int objectIndex) || objectIndex < 0 || objectIndex > (data.objects.Length-1)){
+                            if(!int.TryParse(input, out int objectIndex) || objectIndex < 0 || objectIndex > (data.objects.Length-1)){
 
-                                GameF.Print("The object index \"" + lines[i][0] + "\" specified on line " + (i+1).ToString() + " of " + fileName + " is not an existing object ID.");
+                                GameF.Print("The object index \"" + input + "\" specified on line " + (i+1).ToString() + " of " + fileName + " is not an existing object ID.");
                                 LoadGame();
                                 return;
 
@@ -514,10 +653,10 @@ public class Game{
 
                             for(int p = 1; p < lines[i].Length; p++){
 
-                                string propertyName = lines[0][p];
+                                string propertyName = Parser.CleanInput(lines[0][p]);
                                 if(!propertyTypes.TryGetValue(propertyName, out Type propertyType)){
 
-                                    GameF.Print("The property \"" + lines[0][p] + "\" of the object type \"" + className + "\" specified on column " + (p+1).ToString() + " of " + fileName + " does not exist.");
+                                    GameF.Print("The property \"" + propertyName + "\" of the object type \"" + className + "\" specified on column " + (p+1).ToString() + " of " + fileName + " does not exist.");
                                     LoadGame();
                                     return;
 
@@ -531,9 +670,11 @@ public class Game{
                                     
                                     for(int s = 0; s < splitInput.Length; s++){
 
-                                        if(!GameF.TryCast(splitInput[s], propertyType.GetElementType(), out object value)){
+                                        string propertyValueString = Parser.CleanInput(splitInput[s]);
 
-                                            GameF.Print("The property value \"" + lines[i][p] + "\" of the object type " + className + " specified on column " + (p+1).ToString() + ", line " + (i+1).ToString() + ", item " + (s+1).ToString() + ", of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
+                                        if(!GameF.TryCast(propertyValueString, propertyType.GetElementType(), out object value)){
+
+                                            GameF.Print("The property value \"" + propertyValueString + "\" of the object type " + className + " specified on column " + (p+1).ToString() + ", line " + (i+1).ToString() + ", item " + (s+1).ToString() + ", of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
                                             LoadGame();
                                             return;
 
@@ -548,9 +689,30 @@ public class Game{
                                 }
                                 else if(propertyType.IsPrimitive){
 
-                                    if(!GameF.TryCast(lines[i][p], propertyType, out propertyValue)){
+                                    string propertyValueString = Parser.CleanInput(lines[i][p]);
 
-                                        GameF.Print("The property value \"" + lines[i][p] + "\" of the object type " + className + " specified on column " + (p+1).ToString() + ", line " + (i+1).ToString() + ", of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
+                                    if(propertyType == typeof(bool)){
+
+                                        propertyValueString = propertyValueString.ToLower();
+                                        if(!bool.TryParse(propertyValueString, out bool b)){
+
+                                            GameF.Print("The property value \"" + propertyValueString + "\" of the object type " + className + " specified on column " + (p+1).ToString() + ", line " + (i+1).ToString() + ", of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
+                                            LoadGame();
+                                            return;
+
+                                        }
+
+                                        propertyValue = b;
+
+                                    }
+                                    else if(propertyValueString == "" && propertyType == typeof(int)){
+
+                                        propertyValue = -1;
+
+                                    }
+                                    else if(!GameF.TryCast(propertyValueString, propertyType, out propertyValue)){
+
+                                        GameF.Print("The property value \"" + propertyValueString + "\" of the object type " + className + " specified on column " + (p+1).ToString() + ", line " + (i+1).ToString() + ", of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
                                         LoadGame();
                                         return;
 
@@ -559,7 +721,7 @@ public class Game{
                                 }
                                 else{
 
-                                    GameF.Print("The property \"" + lines[0][p] + "\" of the object type " + className + " specified on column " + (p+1).ToString() + " of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
+                                    GameF.Print("The property \"" + Parser.CleanInput(lines[0][p]) + "\" of the object type " + className + " specified on column " + (p+1).ToString() + " of " + fileName + " is a " + propertyType.Name + ", which is an invalid property type.");
                                     LoadGame();
                                     return;
 
@@ -766,14 +928,6 @@ public class Game{
 
         GameF.SerializeObject<GameData>(data, saveFolderLocation);
 
-        MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
-        if(returnMethodInfo != null){
-
-            Action returnMethod = (Action)Delegate.CreateDelegate(typeof(Action), instance.data, returnMethodInfo);
-            returnMethod();
-
-        }
-
     }
 
 }
@@ -782,26 +936,20 @@ public class Object{
     public string name;
     public string description;
     public int holderID;
-    public int[] travelTable;
     public ObjectClass[] classes;
     [IgnoreDataMember] public Func<bool> subroutine;
-    public Object(string _name, string _description, int _holderID, int[] _travelTable, Func<bool> _subroutine){
+    public Object(string _name, string _description, int _holderID, Func<bool> _subroutine){
 
         name = _name;
         description = _description;
         holderID = _holderID;
-        travelTable = _travelTable;
         subroutine = _subroutine;
 
     }
     public Object(){}
 
 }
-public class ObjectClass{
-
-
-
-}
+public class ObjectClass{}
 public class WordSynonymPair{
 
     public string word;

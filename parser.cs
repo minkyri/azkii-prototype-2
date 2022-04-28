@@ -1,3 +1,5 @@
+using System.Reflection;
+
 public static class Parser{
 
     public static int verbID;
@@ -7,18 +9,29 @@ public static class Parser{
     public static int indirectObjectID = -1;
     public static int syntaxID = -1;
     public static int itObjectPointer = -1;
+    public static string verbInput = "";
+    public static string preposition1Input = "";
+    public static string preposition2Input = "";
     public static string directObjectInput = "";
     public static string indirectObjectInput = "";
     public static string currentInput = "";
     public static void Parse(string input){
 
-        string cleanInput = CleanInput(input.ToLower());
+        string cleanInput = RemoveArticles(CleanInput(input.ToLower()));
         string[] commands = SplitActions(cleanInput);
 
         for(int i = 0; i < commands.Length; i++){
 
             string[] command = commands[i].Split(' ');
-            if(CheckForSpecialActions(commands[i]))return;
+            if(Game.GetInstance().CheckForSpecialActions(commands[i]))return;
+
+            MethodInfo beforeCommandParsedInfo = Game.GetInstance().data.GetType().GetMethod("BeforeCommandParsed");
+            if(beforeCommandParsedInfo != null){
+
+                Action beforeCommandParsedMethod = (Action)Delegate.CreateDelegate(typeof(Action), Game.GetInstance().data, beforeCommandParsedInfo);
+                beforeCommandParsedMethod();
+
+            }
 
             verbID = -1;
             preposition1ID = -1;
@@ -51,6 +64,8 @@ public static class Parser{
 
             }
 
+            verbInput = command[0];
+
             bool foundAnObject = false;
             string[] objectPhrases = new string[2]{"",""};
             int phrasePointer = 0;
@@ -63,6 +78,7 @@ public static class Parser{
                     if(preposition1ID == -1 && !foundAnObject){
                         
                         preposition1ID = tempPrepositionID;
+                        preposition1Input = command[a];
 
                     }
                     else if(foundAnObject){
@@ -70,6 +86,7 @@ public static class Parser{
                         if(preposition2ID == -1){
 
                             preposition2ID = tempPrepositionID;
+                            preposition2Input = command[a];
 
                         }
                         foundAnObject = false;
@@ -141,6 +158,7 @@ public static class Parser{
             if(objectPhrases[0] != ""){
 
                 directObjectID = ScoreObjects(objectPhrases[0]);
+                if(directObjectID != -1)itObjectPointer = directObjectID;
                 if(directObjectID == -1){
 
                     GameF.Print("There is no such object called " + objectPhrases[0] + ".");
@@ -165,6 +183,7 @@ public static class Parser{
             if(objectPhrases[1] != ""){
 
                 indirectObjectID = ScoreObjects(objectPhrases[1]);
+                if(indirectObjectID != -1)itObjectPointer = indirectObjectID;
                 if(indirectObjectID == -1){
 
                     GameF.Print("There is no such object called " + objectPhrases[1] + ".");
@@ -204,30 +223,6 @@ public static class Parser{
 
             for(int s = 0; s < syntaxes.Length && !foundSyntax; s++){
 
-                // string verb = "";
-                // string prep1 = "";
-                // string prep2 = "";
-
-                // if(syntaxes[s].verbID != -1)verb = Game.GetInstance().data.verbs[syntaxes[s].verbID].word;
-                // if(syntaxes[s].preposition1ID != -1)prep1 = Game.GetInstance().data.prepositions[syntaxes[s].preposition1ID].word;
-                // if(syntaxes[s].preposition2ID != -1)prep2 = Game.GetInstance().data.prepositions[syntaxes[s].preposition2ID].word;
-
-                // GameF.Print(
-
-                //     verb + " : " + 
-                //     prep1 + " : " + 
-                //     prep2 + " : " + 
-                //     (!((syntaxes[s].directObjectFlags.Length == 0 && directObjectID != -1) ||
-                //     (syntaxes[s].indirectObjectFlags.Length == 0 && indirectObjectID != -1))).ToString()
-
-                // );
-
-                // GameF.Print(
-
-                //     "     " + (syntaxes[s].directObjectFlags.Length == 0).ToString() + "\n"
-
-                // );
-
                 if(
 
                     syntaxes[s].verbID == verbID &&
@@ -266,6 +261,31 @@ public static class Parser{
 
             }
 
+            if(syntaxes[syntaxID].directObjectFlags.Length != 0 && directObjectID == -1){
+
+                if(preposition1ID != -1){
+
+                    GameF.Print("You need to specify what you want to " + verbInput + " " + preposition1Input + "!");
+                    return;
+
+                }
+                GameF.Print("You need to specify what you want to " + verbInput + "!");
+                return;
+
+            }
+            if(syntaxes[syntaxID].indirectObjectFlags.Length != 0 && indirectObjectID == -1){
+
+                if(preposition1ID != -1){
+
+                    GameF.Print("You need to tell me what you want to " + verbInput + " " + preposition1Input + " the " + directObjectInput + " " + preposition2Input + "!");
+                    return;                    
+
+                }
+                GameF.Print("You need to tell me what you want to " + verbInput + " the " + directObjectInput + " " + preposition2Input + "!");
+                return;
+
+            }
+
             verbAction = syntaxes[syntaxID].subroutine;
             if(indirectObjectID != -1 && objects[indirectObjectID].subroutine != null){
                 
@@ -289,12 +309,12 @@ public static class Parser{
         }
 
     }
-    private static string CleanInput(string input){
+    public static string CleanInput(string input){
 
-        List<string> splitInput = input.Split(' ').ToList();
+        string[] splitInput = input.Split(' ');
         List<string> cleanSplitInput = new List<string>{};
 
-        for(int i = 0; i < splitInput.Count; i++){
+        for(int i = 0; i < splitInput.Length; i++){
 
             string temp = "";
 
@@ -315,11 +335,25 @@ public static class Parser{
 
             }
 
-            if(temp != "" && !Game.GetInstance().data.articles.Contains(temp))cleanSplitInput.Add(temp);
+            if(splitInput[i] != "")cleanSplitInput.Add(temp);
 
         }
 
-        //foreach(string s in cleanSplitInput)GameF.Print(s + "   len: " + s.Length.ToString());
+        return GameF.ArrayToSentence(cleanSplitInput.ToArray());
+
+    }
+    private static string RemoveArticles(string input){
+
+        if(Game.GetInstance().data == null)return input;
+
+        string[] splitInput = input.Split(' ');
+        List<string> cleanSplitInput = new List<string>{};
+
+        for(int i = 0; i < splitInput.Length; i++){
+ 
+            if(splitInput[i] != "" && !Game.GetInstance().data.articles.Contains(splitInput[i]))cleanSplitInput.Add(splitInput[i]);
+
+        }
 
         return GameF.ArrayToSentence(cleanSplitInput.ToArray());
 
@@ -419,17 +453,41 @@ public static class Parser{
 
         }
 
+        List<int> acceptedObjects = new List<int>{};
+        acceptedObjects.Add(objects[highestScoreIndex]);
         for(int j = 0; j < objectScores.Count; j++){
 
             if(objectScores[j] == highestScore && j != highestScoreIndex){
 
-                return -2;
+                acceptedObjects.Add(objects[j]);
 
             }
 
         }
 
-        itObjectPointer = highscoreObject;
+        if(acceptedObjects.Count > 1){
+
+            //GameF.Print("(" + Game.GetInstance().data.objects[objects[highestScoreIndex]] + ")");
+            MethodInfo prioritiseMethodInfo = Game.GetInstance().data.GetType().GetMethod("PrioritiseObjects");
+            if(prioritiseMethodInfo != null){
+
+                Func<int[], int> prioritiseMethod = (Func<int[], int>)Delegate.CreateDelegate(typeof(Func<int[], int>), Game.GetInstance().data, prioritiseMethodInfo);
+                int priority = prioritiseMethod(acceptedObjects.ToArray());
+                if(priority != -1){
+
+                    highscoreObject = priority;
+
+                }
+                else{
+
+                    //return -2;
+
+                }
+
+            }
+
+        }
+
         return highscoreObject;
 
     }
@@ -451,11 +509,6 @@ public static class Parser{
     }
     public static bool ExecuteActions(Func<bool> IO, Func<bool> DO, Func<bool> V){
 
-        if(V != null && V()){
-
-            return true;
-
-        }
         if(IO != null && IO()){
 
             return true;
@@ -466,23 +519,12 @@ public static class Parser{
             return true;
 
         }
-        return false;
+        if(V != null && V()){
 
-    }
-    public static bool CheckForSpecialActions(string input){
-
-        switch(input){
-
-            case "save":
-
-                Game.GetInstance().SaveGame();
-                return true;
-
-            default:
-
-                return false;
+            return true;
 
         }
+        return false;
 
     }
 

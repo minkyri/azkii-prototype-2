@@ -1,5 +1,4 @@
-﻿Game.GetInstance();
-//GameF.DisplayGameData();
+﻿//GameF.DisplayGameData();
 
 while(!Game.GetInstance().isFinished){
 
