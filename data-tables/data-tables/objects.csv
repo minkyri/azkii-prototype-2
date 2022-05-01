@@ -1,0 +1,79 @@
+ID,HOLDER,DESCRIPTION,NAMES,ADJECTIVES,SUBROUTINE
+0,,offscreen,offscreen,,
+1,0,rooms,rooms,,
+2,0,doors,doors,,
+3,27,you,"me, myself",,PlayerF
+4,,north,"north, n",,
+5,,northeast,"northeast, ne",,
+6,,east,"east, e",,
+7,,southeast,"southeast, se",,
+8,,south,"south, s",,
+9,,southwest,"southwest, sw",,
+10,,west,"west, w",,
+11,,north,"northwest, nw",,
+12,,up,"up, u",,
+13,,down,"down, d",,
+14,1,Cryogenics room,"cryoroom, room, freezeroom","cryo, cryogenic, cryogenics, freeze, freezing",CryoRoomF
+15,1,West hallway,"hallway, way, corridor","west, hall",WestHallwayF
+16,1,West bedroom,"bedroom, room","west, bed",WestBedroomF
+17,1,West bathroom,"bathroom, room","west, bath",WestBathroomF
+18,1,Control room,"room, controlroom","control, main, operating",ControlRoomF
+19,1,Greenhouse,"house, room, area","green, plant, nature",GreenhouseF
+20,1,East hallway,"hallway, way, corridor","east, hall",EastHallwayF
+21,1,Cargo bay,"cargobay, bay, room, area","cargo, storage",CargoBayF
+22,1,East bedroom,"bedroom, room","east, bed",EastBedroomF
+23,1,East bathroom,"bathroom, room","east, bath",EastBathroomF
+24,1,Strange room,"room, office","janitors, strange, janitor",JanitorsOfficeF
+25,1,Air lock,"lock, room, area","air, pressure, pressurized, vacuum",
+26,1,Escape World foyer,"foyer, reception, area","escape, room, world",
+27,14,red cryo pod,"cryopod, pod, chamber","freeze, cryo, cryogenics, cryogenic, red",FirstPodF
+28,14,blue cryo pod,"cryopod, pod, chamber","freeze, cryo, cryogenics, cryogenic, blue",SecondPodF
+29,15,window,"window, glass","space, large, circular",WindowF
+30,16,bed,bed,"west, double",WestBedF
+31,16,set of drawers,drawers,"bedroom, bed, west, set",WestDrawersF
+32,17,toilet,"loo, toilet,shitter","west, dirty, space",WestToiletF
+33,17,cabinet,"cabinet, cupboard","bathroom, east",WestCabinetF
+34,17,sink,"sink, tap","west, space, water",WestSinkF
+35,18,timer screen,"screen, display","timer, counting, count, countdown",TimerF
+36,18,control panel,"panel, interface, computer","control, main, operating",ControlPanelF
+37,19,fruit plant,"plant, bed",fruit,TomatoPlantF
+38,19,compost heap,"heap, load, pile","compost, mud, dirt",CompostHeapF
+39,20,boarded window,"window, wood","boarded, board, wooden",BoardedWindowF
+40,21,large cargo box,"box, crate, cube","large, cargo, big, metal, cubic",CargoBoxF
+41,22,bed,bed,"east, double",EastBedF
+42,22,set of drawers,drawers,"bedroom, bed, east, set",EastDrawersF
+43,23,toilet,"loo, toilet,shitter","east, dirty, space",EastToiletF
+44,23,sink,"sink, tap","east, space, water",EastSinkF
+45,23,cabinet,"cabinet, cupboard","bathroom, east",EastCabinetF
+46,2,vent,"vent, hatch","sussy, sus, among, us, amogus, amongus, imposter",VentF
+47,24,wooden table,table,"wooden, janitors, janitor, office",TableF
+48,24,sledgehammer,hammer,sledge,SledgehammerF
+49,2,bay door,door,"bay, space, metal, big, sliding, large, west",WestBayDoorF
+50,2,bay door,door,"bay, space, metal, big, sliding, large, north",NorthBayDoorF
+51,2,blast door,door,"blast, vacuum",BlastDoorF
+52,28,skeleton,"skeleton, bones, bone","employee, fake, ews, escape, world, london",SkeletonF
+53,52,broken keycard,"keycard, piece, card","ews, key, half, broken, destroyed, snapped, bent",BrokenKeycardF
+54,,keycard,"keycard, card","key, ews, complete, fixed",KeycardF
+55,33,glue glob,"glob, glue","glue, sticky, white",GlueF
+56,45,glue glob,"glob, glue","glue, sticky, white",GlueF
+57,33,box of HulkBulk steroids,"steroids, hulkbulk","hulkbulk, hulk, bulk, box",HulkBulkF
+58,31,lockbox,"box, lockbox","lock, rusty, blue",LockBoxF
+59,58,star screwdriver,"screwdriver, driver","screw, star",StarScrewdriverF
+60,42,square screwdriver,"screwdriver, driver","screw, square",SquareScrewdriverF
+61,,triangle screwdriver,"screwdriver, driver","screw, triangle, triangular",TriangleScrewdriverF
+62,38,compost clump,"clump, ball","rough, dirty, muddy, compost",CompostClumpF
+63,37,plastic tomato,"tomato, tomatoes","red, plastic",TomatoF
+64,65,plastic potato,potato,"yellow, raw, plastic",PotatoF
+65,19,vegetable plant,"plant, bed","vegetable, veg, veggy",PotatoPlantF
+66,,red power core,core,"power, red",PowerCoreF
+67,,blue power core,core,"power, blue",PowerCoreF
+68,40,green power core,core,"power, green",PowerCoreF
+69,45,ScatScrub 3000,"scrub, bleach, liquid, scatscrub, 3000, unblocker",scat,ScatScrubF
+70,47,resignation letter,"letter, paper","resignation, quit, quitting",ResignationLetterF
+71,49,keycard scanner,"scanner, scan, checker, device, machine","scanning, scan, keycard, card, key, west",WestKeycardScannerF
+72,50,keycard scanner,"scanner, scan, checker, device, machine","scanning, scan, keycard, card, key, north",NorthKeycardScannerF
+73,57,green pill,"pill, medicine, capsule, green","green, sus, strange, hulk, bulk, hulkbulk",GreenPillF
+74,,lockbox key,key,"metal, lockbox",
+75,46,square screw,"bolt, screw, nut, square","square, metal",SquareScrewF
+76,46,triangle screw,"bolt, screw, nut, triangle","triangle, metal, triangular",TriangleScrewF
+77,46,star screw,"bolt, screw, nut, star","star, metal",StarScrewF

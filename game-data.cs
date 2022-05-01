@@ -23,6 +23,12 @@ public class GameData{
 
     #endregion
 
+    //Everything below will be different for different text adventures
+
+    //Object subroutines are marked with an F at the end, for example: ControlPanelF
+    //Verb subroutines are marked with a V at the end, for example: LookV
+    //These routines should return true if they have written to the console, and false if not (in most cases)
+
     #region Custom Variables
 
         [DataMember] string player = "me";
@@ -542,6 +548,7 @@ public class GameData{
 
                 GameF.Print("What luck! You threw the " + objects[Parser.directObjectID].description + " up into the air, and hit you square on the head, " + 
                 "killing you instantly. Next time don't throw things about like an idiot!");
+                Death();
 
             }
             else{
@@ -1416,8 +1423,6 @@ public class GameData{
                     bool powerCoreInPipes = GameF.GetObjectHolder("blue power core") == -1;
                     int[] held = GameF.GetHeldObjects(eastToilet);
 
-                    GameF.Print(GameF.GetObjectHolder("blue power core").ToString());
-
                     if(scatScrubInEastToilet && powerCoreInPipes){
 
                         GameF.Print("The ScatScrub3000 in the toilet begins dissolving everything in it's path. You hear something drop in the pipes and get flushed away...");
@@ -2191,7 +2196,7 @@ public class GameData{
         public class Container : ObjectClass{
 
             public int capacity { get; set; }
-            public int held { get; set; }
+            public int[] held { get; set; }
 
         }
         public class OnContainer : Container{}

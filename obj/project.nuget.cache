@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "krYJITDVDR4cnW8HfXT8CXUTvIHQr9E4icctt7ZLbHcce63nlD83cCrunb7I6OgtIw8B8WWta0Gu1S9sl1z5VA==",
+  "dgSpecHash": "I1uyo+3IA7HnrvVLLmuiUb+4qNxNKMSw1+VEYK+K5lLbBG1E3czlHkd3cI91VbBIrkMM9fzun4BpaXMjOTK/NQ==",
   "success": true,
-  "projectFilePath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\azkii-prototype-2.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\kyria\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
+    "C:\\Users\\kyria\\.nuget\\packages\\system.drawing.common\\6.0.0\\system.drawing.common.6.0.0.nupkg.sha512",
+    "C:\\Users\\kyria\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
+  ],
   "logs": []
 }

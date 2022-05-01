@@ -17,14 +17,20 @@ public static class Parser{
     public static string currentInput = "";
     public static void Parse(string input){
 
+        //removes the whitespace, punctuation and article words from the player's input, to make it more readable by the parser
         string cleanInput = RemoveArticles(CleanInput(input.ToLower()));
+        
+        //splits the players input into individual commands by conjunctions such as "and", "then"
         string[] commands = SplitActions(cleanInput);
 
         for(int i = 0; i < commands.Length; i++){
 
             string[] command = commands[i].Split(' ');
+
+            //check if the player wants to save, load or exit the game
             if(Game.GetInstance().CheckForSpecialActions(commands[i]))return;
 
+            //this is an optional subroutine that the game can have, and will be called everytime the user enters a command
             MethodInfo beforeCommandParsedInfo = Game.GetInstance().data.GetType().GetMethod("BeforeCommandParsed");
             if(beforeCommandParsedInfo != null){
 
@@ -40,7 +46,17 @@ public static class Parser{
             indirectObjectID = -1;
             syntaxID = -1;
 
+            //assume the first word is a verb
             verbID = GameF.GetWSPairIndex(command[0], Game.GetInstance().data.verbs);
+
+            //return if no input is provided by the player
+            if(commands[i] == "")
+            {
+
+                GameF.Print("You didn't enter anything.");
+                return;
+
+            }
 
             if(verbID == -1){
 
@@ -66,7 +82,10 @@ public static class Parser{
 
             verbInput = command[0];
 
+            //this section tries to tokenize the command by prepositions, leaving an array of objects.
             bool foundAnObject = false;
+
+            //there should only be a maximum of 2 objects referenced in the command
             string[] objectPhrases = new string[2]{"",""};
             int phrasePointer = 0;
 
@@ -99,6 +118,7 @@ public static class Parser{
                 
                     foundAnObject = true;
                     
+                    //if there are more than two prepositions, then we get an array of more than two objects, which means that the player has specified too many objects
                     if(phrasePointer >= 2){
 
                         GameF.Print("There are too many nouns in that sentence!");
@@ -107,17 +127,20 @@ public static class Parser{
                     }
                     else{
 
+                        //the object phrases are constructed to give a phrase relating to a specific object - this could include the objects name and adjectives
                         objectPhrases[phrasePointer] += command[a] + " ";
 
                     }   
 
                 }
+                //there can only be one verb, which is at the beginning, so if another verb is detected, there are too many verbs and we return.
                 else if(GameF.GetWSPairIndex(command[a], Game.GetInstance().data.verbs) != -1){
 
                     GameF.Print("You've used too many verbs!");
                     return;
 
                 }
+                //if the word doesn't show up in the prepositions, the verbs, the object names, or the object adjectives, then we do not know the word.
                 else{
 
                     GameF.Print("I don't know the word \"" + command[a] + "\".");
@@ -133,6 +156,7 @@ public static class Parser{
 
             }
 
+            //we need to get the last object referenced so that "it" can be used to point to the last object referenced
             if(itObjectPointer != -1){
 
                 string lastObjectInput = "";
@@ -155,6 +179,7 @@ public static class Parser{
             directObjectInput = objectPhrases[0];
             indirectObjectInput = objectPhrases[1];
 
+            //now that we have our object phrases, we can begin scoring them to see which object best matches them, so we can populate the direct and indirect object identifiers
             if(objectPhrases[0] != ""){
 
                 directObjectID = ScoreObjects(objectPhrases[0]);
@@ -205,13 +230,6 @@ public static class Parser{
 
             }
 
-            // GameF.Print("ACTION: " + (i+1).ToString());
-            // if(verbID != -1)GameF.Print("   verb: " + Game.GetInstance().data.verbs[verbID].word);
-            // if(preposition1ID != -1)GameF.Print("   preposition 1: " + Game.GetInstance().data.prepositions[preposition1ID].word);
-            // if(directObjectID != -1)GameF.Print("   direct object: " + Game.GetInstance().data.objects[directObjectID].name);
-            // if(preposition2ID != -1)GameF.Print("   preposition 2: " + Game.GetInstance().data.prepositions[preposition2ID].word);
-            // if(indirectObjectID != -1)GameF.Print("   indirect object: " + Game.GetInstance().data.objects[indirectObjectID].name);
-
             Syntax[] syntaxes = Game.GetInstance().data.syntaxes;
             Object[] objects = Game.GetInstance().data.objects;
 
@@ -221,6 +239,7 @@ public static class Parser{
 
             bool foundSyntax = false;
 
+            //now that we know our verb ID and preposition IDs, we can attempt to match it to a syntax, which will tell us how objects can be used
             for(int s = 0; s < syntaxes.Length && !foundSyntax; s++){
 
                 if(
@@ -241,6 +260,7 @@ public static class Parser{
 
             }
 
+            //return when no syntax matches verb and prepositions
             if(!foundSyntax){
 
                 GameF.Print("That sentence isn't one that I recognise.");
@@ -248,6 +268,7 @@ public static class Parser{
 
             }
 
+            //check if the objects found abide by the flags specified in the syntax
             currentInput = directObjectInput;
             if(directObjectID != -1 && !CheckFlags(directObjectID, syntaxes[syntaxID].directObjectFlags)){
 
@@ -261,6 +282,7 @@ public static class Parser{
 
             }
 
+            //try to get player to elaborate on their input before returning
             if(syntaxes[syntaxID].directObjectFlags.Length != 0 && directObjectID == -1){
 
                 if(preposition1ID != -1){
@@ -298,6 +320,7 @@ public static class Parser{
 
             }
 
+            //finally, execute the subroutine of the indirect object, then that of the direct object and the same for the verb
             if(!ExecuteActions(indirectObjectAction, directObjectAction, verbAction)){
 
                 GameF.Print("You can't do that!");
@@ -311,6 +334,8 @@ public static class Parser{
     }
     public static string CleanInput(string input){
 
+        //removes punctuation and whitespace
+
         string[] splitInput = input.Split(' ');
         List<string> cleanSplitInput = new List<string>{};
 
@@ -318,6 +343,7 @@ public static class Parser{
 
             string temp = "";
 
+            //check each individual character, and only add to the return string if not any of the char types below
             for(int c = 0; c < splitInput[i].Length; c++){
                 
                 if(!(
@@ -344,6 +370,9 @@ public static class Parser{
     }
     private static string RemoveArticles(string input){
 
+        //removes articles from input
+        //articles are specified in the articles.csv file
+
         if(Game.GetInstance().data == null)return input;
 
         string[] splitInput = input.Split(' ');
@@ -359,6 +388,9 @@ public static class Parser{
 
     }
     private static string[] SplitActions(string input){
+
+        //split the users input into individual commands by tokenizing by conjunctions
+        //conjunctions are specified in the conjunctions.csv file
 
         string[] splitInput = input.Split(' ');
         List<List<string>> commands = new List<List<string>>{};

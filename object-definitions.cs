@@ -5,12 +5,14 @@ public class Game{
 
     private static Game instance;
     public bool isFinished = false;
+    public int textSpeed = 15;
     public GameData data;
 
     private Game(){}
     public static Game GetInstance()
     {
 
+        //makes sure that only one instance of Game can ever exist (Singleton class)
         if (instance == null)
         {
 
@@ -55,12 +57,13 @@ public class Game{
     }
     public void LoadGame(){
 
-        //string loadFolderLocation = @"F:\school\computer-science\cs-project\solutions\azkii-prototype-2\data-tables\example";
-        string[] loadChoice = GameF.Input("Would you like to start a new game, or load a save game?").ToLower().Split(' ');
+        //lets the user choose between loading a game data from csv files, or loading it from an xml file
+
+        string[] loadChoice = GameF.Input("Would you like to load from csv files, or load from a saved xml game?").ToLower().Split(' ');
         string loadFolderLocation;
 
-        bool start = loadChoice.Contains("n") || loadChoice.Contains("new") || loadChoice.Contains("start") || loadChoice.Contains("begin");
-        bool load = loadChoice.Contains("l") || loadChoice.Contains("load") || loadChoice.Contains("save");
+        bool start = loadChoice.Contains("csv");
+        bool load = loadChoice.Contains("save") || loadChoice.Contains("xml") || loadChoice.Contains("saved");
 
         if((start && load) || (!start && !load)){
 
@@ -86,7 +89,7 @@ public class Game{
         }
         else{
 
-            loadFolderLocation = @"F:\school\computer-science\cs-project\games\e-w-l\data-tables";//GameF.Input("Enter file location of game template.");
+            loadFolderLocation = GameF.Input("Enter folder location containing data tables.");
             LoadGameFromCSV(loadFolderLocation);
             
             MethodInfo startMethodInfo = instance.data.GetType().GetMethod("StartGame");
@@ -101,6 +104,8 @@ public class Game{
 
     }
     public void SaveGame(){
+
+        //saves the game to the saves folder as an xml file, by serializing the GameData instance
 
         string fileName = GameF.Input("Enter name for save game.");
 
@@ -117,6 +122,7 @@ public class Game{
 
         }
 
+        //checks to see if the game's data includes a method that specifies what happens upon returning to the game after saving
         MethodInfo returnMethodInfo = instance.data.GetType().GetMethod("ReturnToGame");
         if(returnMethodInfo != null){
 
@@ -127,6 +133,8 @@ public class Game{
 
     }
     public void ResartGame(){
+
+        //lets the player restart the game
 
         string[] loadChoice = GameF.Input("Would you like to restart?").ToLower().Split(' ');
 
@@ -154,6 +162,8 @@ public class Game{
 
     }
     public void ExitGame(){
+
+        //lets the player exit the game
 
         string[] loadChoice = GameF.Input("Are you sure you want to exit?").ToLower().Split(' ');
 
@@ -194,6 +204,8 @@ public class Game{
     }
     private void LoadGameFromCSV(string loadFolderLocation){
 
+        //loads the game data properties from csv files
+
         Type dataClassType = data.GetType();
 
         string[] filesToCheckFor = new string[]{
@@ -210,6 +222,7 @@ public class Game{
 
         foreach(string fileName in filesToCheckFor){
 
+            //make sure there won't be any exceptions thrown when reading the files
             string filePath = loadFolderLocation + "/" + fileName + fileType;
             if(!File.Exists(filePath)){
 
@@ -337,14 +350,20 @@ public class Game{
                 name = lines[i][3].Split(',')[0];
                 description = lines[i][2];
                 
-                if(lines[i][1] == ""){
+                if(lines[i][1] == "")holder = -1;
+                else if(!int.TryParse(lines[i][1], out holder)){
 
-                    holder = -1;
+                    GameF.Print("The object holder \"" + lines[i][1] + "\" on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " is not a valid object id.");
+                    LoadGame();
+                    return;
 
                 }
-                else{
+                else if(holder < 0){
 
-                    int.TryParse(lines[i][1], out holder);
+                    GameF.Print("The object holder \"" + lines[i][1] + "\" on line " + (i+1).ToString() + " of " + loadFolderLocation + "/objects" + fileType + " is not a valid object id.");
+                    LoadGame();
+                    return;
+
 
                 }
 
@@ -598,6 +617,8 @@ public class Game{
         #endregion
         #region Read Classes
 
+            //reflection is used here to try to find whether classes exist in game data
+
             string[] files = Directory.GetFiles(loadFolderLocation);
             Dictionary<int, List<ObjectClass>> objectClasses = new Dictionary<int, List<ObjectClass>>{};
 
@@ -607,6 +628,7 @@ public class Game{
                 string fileName = Path.GetFileName(file);
                 if (cutFileName.Length > 2){
 
+                    //take the string after the "c_" in the file name to be the name of the class
                     if(cutFileName.Substring(0, 2) == "c_" && Path.GetExtension(file) == ".csv"){
 
                         string classFileName = cutFileName.Substring(2);
@@ -804,6 +826,8 @@ public class Game{
     }
     private void LoadGameFromXML(string loadFolderLocation){
 
+        //loads an xml file from the specified location and assigns it to the game data instance
+
         data = GameF.DeserializeObject<GameData>(loadFolderLocation);
         Type dataClassType = data.GetType();
 
@@ -877,6 +901,8 @@ public class Game{
 
     }
     private void SaveGameToXML(string saveFolderLocation){
+
+        //takes the game data class instance and saves it to an xml file
 
         data.objectSubroutineDictionary = new Dictionary<int, string>{};
         for(int i = 0; i < data.objects.Length; i++){
@@ -952,6 +978,7 @@ public class Object{
 public class ObjectClass{}
 public class WordSynonymPair{
 
+    //used for verbs and prepositions
     public string word;
     public int synonym;
 
@@ -968,6 +995,8 @@ public class Syntax{
 
     public int verbID;
     public int preposition1ID;
+
+    //delegates cannot be serialized
     [IgnoreDataMember] public Func<int, bool, bool>[] directObjectFlags;
     public int preposition2ID;
     [IgnoreDataMember] public Func<int, bool, bool>[] indirectObjectFlags;

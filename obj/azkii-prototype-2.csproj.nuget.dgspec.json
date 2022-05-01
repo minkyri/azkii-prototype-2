@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {}
+    "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\azkii-prototype-2.csproj": {}
   },
   "projects": {
-    "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj": {
+    "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\azkii-prototype-2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
+        "projectUniqueName": "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\azkii-prototype-2.csproj",
         "projectName": "azkii-prototype-2",
-        "projectPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\azkii-prototype-2.csproj",
+        "projectPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\azkii-prototype-2.csproj",
         "packagesPath": "C:\\Users\\kyria\\.nuget\\packages\\",
-        "outputPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii-prototype-2\\obj\\",
+        "outputPath": "F:\\school\\computer-science\\cs-project\\solutions\\azkii\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\kyria\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,6 +39,12 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "System.Windows.Extensions": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

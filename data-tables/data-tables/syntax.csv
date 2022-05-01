@@ -1,0 +1,67 @@
+VERB,PREPOSITION,D-FLAGS,PREPOSITION2,I-FLAGS,SUBROUTINES
+go,,Any,,,GoV
+inventory,,,,,InventoryV
+north,,,,,GoNorthV
+northeast,,,,,GoNorthEastV
+east,,,,,GoEastV
+southeast,,,,,GoSouthEastV
+south,,,,,GoSouthV
+southwest,,,,,GoSouthWestV
+west,,,,,GoWestV
+northwest,,,,,GoNorthWestV
+up,,,,,GoUpV
+down,,,,,GoDownV
+look,,,,,LookV
+look,around,,,,LookV
+look,around,"InRoom, Has",,,LookV
+look,at,"InRoom, Has",,,LookAtV
+look,outside,"InRoom, Has",,,LookAtV
+look,on,"InRoom, Has",,,LookOnV
+look,in,"InRoom, Has",,,LookInsideV
+flush,,"InRoom, Has",,,FlushV
+open,,"InRoom, Has",,,OpenV
+open,,"InRoom, Has",with,Has,UnlockV
+unlock,,"InRoom, Has",with,Has,UnlockV
+close,,"InRoom, Has",,,CloseV
+take,all,,,,TakeAllV
+take,,"InRoom, Has",,,TakeV
+take,up,"InRoom, Has",,,TakeV
+check,,"InRoom, Has",,,CheckV
+push,,"InRoom, Has",,,PushV
+swipe,,Has,with,"InRoom, Has",SwipeV
+swipe,,Has,on,"InRoom, Has",SwipeV
+dig,in,"InRoom, Has",,,DigV
+throw,,Has,,,ThrowV
+throw ,,Has,at,"InRoom, Has",ThrowAtV
+throw,,Has,into,"InRoom, Has",PutInV
+throw,,Has,on,"InRoom, Has",PutOnV
+break,,"InRoom, Has",,,BreakV
+pour,,"InRoom, Has",into,"InRoom, Has",PourV
+pour,,"InRoom, Has",on,"InRoom, Has",PourV
+climb,through,InRoom,,,GetInV
+go,through,InRoom,,,GetInV
+go,to,Any,,,GoV
+unscrew,,"InRoom, Has",with,Has,UnscrewV
+drop,,Has,,,DropV
+put,,Has,into,"InRoom, Has",PutInV
+put,,Has,on,"InRoom, Has",PutOnV
+eat,,"InRoom, Has",,,EatV
+drink,,"InRoom, Has",,,EatV
+read,,"InRoom, Has",,,ReadV
+get,through,InRoom,,,GetInV
+go,through,InRoom,,,GetInV
+get,out,InRoom,,,GetOutV
+go,out,InRoom,,,GetOutV
+find,,"InRoom, Has",,,FindV
+where,is,"InRoom, Has",,,FindV
+look,for,"InRoom, Has",,,FindV
+touch,,"InRoom, Has",,,TouchV
+fix,,Has,with,Has,FixV
+glue,together,Has,with,Has,FixV
+put,together,Has,with,Has,FixV
+glue,,Has,with,Has,FixV
+shake,,Has,,,ShakeV
+wash,,Has,in,"InRoom, Has",WashV
+wash,,Has,with,"InRoom, Has",WashV
+dig,,"InRoom, Has",,,DigV
+dig,in,"InRoom, Has",,,DigV

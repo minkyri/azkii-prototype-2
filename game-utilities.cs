@@ -1,6 +1,5 @@
 using System.Runtime.Serialization;
 using System.Xml;
-using System.Text;
 
 public static class GameF{
 
@@ -8,153 +7,46 @@ public static class GameF{
         public static Random random = new Random();
         public static void Print(string display){
 
-            Console.WriteLine(display);
+            //prints message character by character for a more immersive feel
+            for(int i = 0; i < display.Length; i++){
+
+                Console.Write(display[i]);
+                //if the player presses a key, immediately display the entire message
+                if(!Console.KeyAvailable){
+                    
+                    Thread.Sleep(Game.GetInstance().textSpeed);
+
+                }
+
+            }
+            Console.WriteLine();
 
         }
         public static string Input(string display){
 
-            Console.WriteLine(display);
-            Console.Write("\n>  ");
-            return Console.ReadLine();
+            //take an input from the player while giving them a message. this could be used for questions
+            Print(display);
+            return Input();
 
         }
         public static string Input(){
 
+            //take an input from the player
             Console.Write("\n>  ");
             return Console.ReadLine();
 
         }
-        public static int BinarySearch(int find, int[] array){
-
-            return RecursiveBinarySearch(find, array, 0, array.Length-1);
-
-        }
-        private static int RecursiveBinarySearch(int find, int[] array, int min, int max)  
-        {  
-
-            if (min > max)  
-            {  
-
-                return -1;  
-
-            }  
-            else  
-            {  
-
-                int middle = (min+max)/2;  
-                if (find == array [middle])  
-                {  
-
-                    return middle + 1;  
-
-                }  
-                else if (find < array [middle])  
-                {  
-
-                    return RecursiveBinarySearch(find, array, min, middle - 1);  
-
-                }  
-                else  
-                {  
-
-                    return RecursiveBinarySearch(find, array, middle + 1, max);  
-
-                }  
-
-            }  
-
-        }
-        public static int[] MergeSort(int[] array)
-        {
-            int[] left;
-            int[] right;
-            int[] result = new int[array.Length];  
-            //As this is a recursive algorithm, we need to have a base case to 
-            //avoid an infinite recursion and therfore a stackoverflow
-            if (array.Length <= 1)
-                return array;              
-            // The exact midpoint of our array  
-            int midPoint = array.Length / 2;  
-            //Will represent our 'left' array
-            left = new int[midPoint];
-  
-            //if array has an even number of elements, the left and right array will have the same number of 
-            //elements
-            if (array.Length % 2 == 0)
-                right = new int[midPoint];  
-            //if array has an odd number of elements, the right array will have one more element than left
-            else
-                right = new int[midPoint + 1];  
-            //populate left array
-            for (int i = 0; i < midPoint; i++)
-                left[i] = array[i];  
-            //populate right array   
-            int x = 0;
-            //We start our index from the midpoint, as we have already populated the left array from 0 to midpont
-            for (int i = midPoint; i < array.Length; i++)
-            {
-                right[x] = array[i];
-                x++;
-            }  
-            //Recursively sort the left array
-            left = MergeSort(left);
-            //Recursively sort the right array
-            right = MergeSort(right);
-            //Merge our two sorted arrays
-            result = Merge(left, right);  
-            return result;
-        }
-        private static int[] Merge(int[] left, int[] right)
-        {
-            int resultLength = right.Length + left.Length;
-            int[] result = new int[resultLength];
-            //
-            int indexLeft = 0, indexRight = 0, indexResult = 0;  
-            //while either array still has an element
-            while (indexLeft < left.Length || indexRight < right.Length)
-            {
-                //if both arrays have elements  
-                if (indexLeft < left.Length && indexRight < right.Length)  
-                {  
-                    //If item on left array is less than item on right array, add that item to the result array 
-                    if (left[indexLeft] <= right[indexRight])
-                    {
-                        result[indexResult] = left[indexLeft];
-                        indexLeft++;
-                        indexResult++;
-                    }
-                    // else the item in the right array wll be added to the results array
-                    else
-                    {
-                        result[indexResult] = right[indexRight];
-                        indexRight++;
-                        indexResult++;
-                    }
-                }
-                //if only the left array still has elements, add all its items to the results array
-                else if (indexLeft < left.Length)
-                {
-                    result[indexResult] = left[indexLeft];
-                    indexLeft++;
-                    indexResult++;
-                }
-                //if only the right array still has elements, add all its items to the results array
-                else if (indexRight < right.Length)
-                {
-                    result[indexResult] = right[indexRight];
-                    indexRight++;
-                    indexResult++;
-                }  
-            }
-            return result;
-        }
         public static string SnakeToPascal(string snakeString){
+
+            //used to convert from snake case to pascal case
+            // on-container becomes OnContainer
 
             if(snakeString.Length == 0)return snakeString;
 
             char separator = '-';
             string pascalString = "";
 
+            //first letter capitalised
             pascalString += char.ToUpper(snakeString[0]);
             bool lastWasSeparator = false;
 
@@ -189,6 +81,8 @@ public static class GameF{
         public static bool TryCast(object input, Type type, out object result)
         {
 
+            //used to safely cast an object to a type
+
             result = null;
             try
             {
@@ -207,6 +101,8 @@ public static class GameF{
         }
         public static int[] GetIndexes(string s, string[] arr){
 
+            //find all of the indexes for which a string appears in an array
+
             List<int> indexes = new List<int>{};
 
             for(int i = 0; i < arr.Length; i++){
@@ -219,27 +115,9 @@ public static class GameF{
             return new int[]{-1};
 
         }
-        public static int[] StringsToUnicodeInts(string[] array){
-
-            List<byte[]> asciiValues = new List<byte[]>{};
-            List<int> intValues = new List<int>{};
-
-            for(int i = 0; i < array.Length; i++){
-
-                asciiValues.Add(Encoding.Unicode.GetBytes(array[i]));
-
-            }
-
-            foreach(byte[] bytes in asciiValues){
-
-                intValues.Add(BitConverter.ToInt32(bytes));
-
-            }
-
-            return intValues.ToArray();
-
-        }
         public static string ArrayToSentence(string[] array){
+
+            //converts an array of strings to a single string, and puts spaces inbetween
 
             string returnString = "";
 
@@ -252,6 +130,7 @@ public static class GameF{
         } 
         public static bool Chance(int percent){
 
+            //calculates a percentage chance
             return random.Next(0, 100) < percent;
 
         }
@@ -261,6 +140,8 @@ public static class GameF{
 
         public static bool IsFileLocked(FileInfo file)
         {
+
+            //check if file locked/open to prevent writing/reading while file still in memory
             try
             {
                 using(FileStream stream = file.Open(FileMode.Open, FileAccess.Read, FileShare.None))
@@ -280,6 +161,8 @@ public static class GameF{
         }
         public static string[][] ReadCSV(string path){
 
+            //gets the contents of a csv file
+
             List<string[]> lines = new List<string[]>{};
 
             using(var reader = new StreamReader(path)){
@@ -297,6 +180,8 @@ public static class GameF{
         }
         public static string[] SplitCsvLine(string line)
         {
+
+            //splits line by commas, except for when quotes are used - quotes indicate a list inside a single cell
             List<string> result = new List<string>();
             string currentStr = "";
             bool inQuotes = false;
@@ -337,6 +222,7 @@ public static class GameF{
         }
         public static void SerializeObject<T>(T objectInstance, string filePath){
 
+            //serialize object to save as xml
             FileStream writer = new FileStream(filePath, FileMode.Create);
             DataContractSerializer ser = new DataContractSerializer(typeof(T), Game.GetInstance().data.GetType().GetNestedTypes());
             ser.WriteObject(writer, objectInstance);
@@ -345,6 +231,7 @@ public static class GameF{
         }
         public static T DeserializeObject<T>(string filePath){
 
+            //deserialize xml contents to get an object instance
             FileStream fs = new FileStream(filePath, FileMode.Open);
             XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
             DataContractSerializer ser = new DataContractSerializer(typeof(T), Game.GetInstance().data.GetType().GetNestedTypes());
@@ -461,33 +348,7 @@ public static class GameF{
         }
         public static int SearchForObject(string name){
 
-            // Object[] objects = Game.GetInstance().data.objects;
-            
-            // for(int i = 0; i < objects.Length; i++){
-
-            //     if(objects[i].name == name){
-
-            //         return i;
-
-            //     }
-
-            // }
-
             return Parser.ScoreObjects(name);
-
-            // Object[] objects = Game.GetInstance().data.objects;
-            // List<string> objectNames = new List<string>{};
-            // for(int i = 0; i < objects.Length; i++){
-
-            //     objectNames.Add(objects[i].name);
-
-            // }
-
-            // int find = StringsToUnicodeInts(new string[1]{name})[0];
-            // int index = BinarySearch(find, StringsToUnicodeInts(objectNames.ToArray()));
-
-            // GameF.Print(objectNames[index]);
-            // return index;
 
         }
         public static int GetObjectHolder(string name){

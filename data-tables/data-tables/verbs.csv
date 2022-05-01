@@ -1,0 +1,38 @@
+VERB,SYNONYMS
+go,"travel,walk,run"
+inventory,i
+north,n
+northeast,ne
+east,e
+southeast,se
+south,s
+southwest,sw
+west,w
+northwest,nw
+up,u
+down,d
+look,"l, examine, see"
+flush,rinse
+open,unlock
+close,seal
+take,"grab, steal, pick, get"
+check,
+push,press
+scan,swipe
+dig,
+throw,chuck
+break,"smash, hulksmash, destroy, obliterate, crush, stamp, demolish, rip"
+pour,drizzle
+climb,
+unscrew,"twist, remove, undo"
+drop,"release, leave"
+put,place
+touch,feel
+eat,"consume, munch, bite"
+drink,sip
+read,
+find,where
+glue,stick
+fix,"mend, create"
+shake,rattle
+wash,clean

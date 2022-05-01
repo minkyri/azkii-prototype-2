@@ -1,0 +1,12 @@
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\azkii-prototype-2.exe
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\azkii-prototype-2.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\azkii-prototype-2.deps.json
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\azkii-prototype-2.runtimeconfig.json
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\azkii-prototype-2.pdb
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\Microsoft.Win32.SystemEvents.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\System.Drawing.Common.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\System.Windows.Extensions.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+F:\school\computer-science\cs-project\solutions\azkii-prototype-2\bin\Debug\net6.0\publish\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
